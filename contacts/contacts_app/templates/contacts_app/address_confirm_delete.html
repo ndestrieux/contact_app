@@ -1,0 +1,16 @@
+{% extends "contacts_app/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="container">
+        <h2>Delete address</h2>
+        <form id="empty" method="post">
+            <p>Are you sure you want to delete address: <b>{{ object }}</b>?</p>
+            <input type="submit" class="btn btn-secondary" value="Delete">
+            {% csrf_token %}
+        </form>
+    </div>
+
+{% endblock %}
