@@ -20,7 +20,7 @@ from django.urls import path
 from contacts.settings import DEBUG
 from contacts_app.views import ContactListView, ContactDetailsView, CreateContactView, UpdateContactView, \
     DeleteContactView, CreateAddressView, CreatePhoneView, CreateEmailView, UpdateAddressView, UpdatePhoneView, \
-    UpdateEmailView
+    UpdateEmailView, DeleteAddressView, DeletePhoneView, DeleteEmailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,6 +38,10 @@ urlpatterns = [
     path('<int:pk>/modify_address', UpdateAddressView.as_view(), name="update-address"),
     path('<int:pk>/modify_phone', UpdatePhoneView.as_view(), name="update-phone"),
     path('<int:pk>/modify_email', UpdateEmailView.as_view(), name="update-email"),
+
+    path('<int:pk>/delete_address', DeleteAddressView.as_view(), name="delete-address"),
+    path('<int:pk>/delete_phone', DeletePhoneView.as_view(), name="delete-phone"),
+    path('<int:pk>/delete_email', DeleteEmailView.as_view(), name="delete-email"),
 ]
 
 if DEBUG:

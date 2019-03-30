@@ -97,6 +97,7 @@ class CreateEmailView(CreateView):
 class UpdateAddressView(UpdateView):
     model = Address
     fields = '__all__'
+    template_name_suffix = '_update_form'
 
     def get_object(self):
         id = self.kwargs.get(self.pk_url_kwarg)
@@ -117,6 +118,7 @@ class UpdateAddressView(UpdateView):
 class UpdatePhoneView(UpdateView):
     model = Phone
     fields = '__all__'
+    template_name_suffix = '_update_form'
 
     def get_object(self):
         id = self.kwargs.get(self.pk_url_kwarg)
@@ -137,6 +139,7 @@ class UpdatePhoneView(UpdateView):
 class UpdateEmailView(UpdateView):
     model = Email
     fields = '__all__'
+    template_name_suffix = '_update_form'
 
     def get_object(self):
         id = self.kwargs.get(self.pk_url_kwarg)
@@ -152,48 +155,45 @@ class UpdateEmailView(UpdateView):
     def get_success_url(self):
         id = self.kwargs.get(self.pk_url_kwarg)
         return reverse('contact-details', args=(id,))
+    
+    
+class DeleteAddressView(DeleteView):
+    model = Address
+    fields = '__all__'
+
+    def get_object(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        object = get_object_or_404(Person, id=id).address
+        return object
+
+    def get_success_url(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        return reverse('contact-details', args=(id,))
 
 
-# class CreateAddressView(CreateView):
-#     model = Address
-#     fields = '__all__'
-#
-#     def form_valid(self, form):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         self.object = form.save()
-#         Person.objects.filter(pk=id).update(address=self.object.id)
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#     def get_success_url(self):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         return reverse('contact-details', args=(id,))
-#
-#
-# class CreatePhoneView(CreateView):
-#     model = Phone
-#     fields = '__all__'
-#
-#     def form_valid(self, form):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         self.object = form.save()
-#         Person.objects.filter(pk=id).update(phone=self.object.id)
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#     def get_success_url(self):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         return reverse('contact-details', args=(id,))
-#
-#
-# class CreateEmailView(CreateView):
-#     model = Email
-#     fields = '__all__'
-#
-#     def form_valid(self, form):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         self.object = form.save()
-#         Person.objects.filter(pk=id).update(email=self.object.id)
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#     def get_success_url(self):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         return reverse('contact-details', args=(id,))
+class DeletePhoneView(DeleteView):
+    model = Phone
+    fields = '__all__'
+
+    def get_object(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        object = get_object_or_404(Person, id=id).phone
+        return object
+
+    def get_success_url(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        return reverse('contact-details', args=(id,))
+
+
+class DeleteEmailView(DeleteView):
+    model = Email
+    fields = '__all__'
+
+    def get_object(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        object = get_object_or_404(Person, id=id).email
+        return object
+
+    def get_success_url(self):
+        id = self.kwargs.get(self.pk_url_kwarg)
+        return reverse('contact-details', args=(id,))

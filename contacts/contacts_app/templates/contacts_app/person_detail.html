@@ -11,22 +11,25 @@
         <p><b>Description:</b><br>{{ object.description }}</p>
         <p><b>Address:</b><br>
             {% if object.address %}
-            {{ object.address }}
+            {{ object.address }} ( <a href="{% url 'update-address' object.id %}">Edit</a>
+                 | <a href="{% url 'delete-address' object.id %}">Delete</a> )
             {% else %}
             <a href="{% url 'create-address' object.id%}">Add address</a>
-            {% endif %} ( <a href="{% url 'update-address' object.id %}">Edit</a> )
+            {% endif %}
         </p>
         <p><b>Phone number:</b><br>{% if object.phone %}
-            {{ object.phone }}
+            {{ object.phone }} ( <a href="{% url 'update-phone' object.id %}">Edit</a>
+                 | <a href="{% url 'delete-phone' object.id %}">Delete</a> )
             {% else %}
             <a href="{% url 'create-phone' object.id%}">Add phone number</a>
-            {% endif %} ( <a href="{% url 'update-phone' object.id %}">Edit</a> )
+            {% endif %}
         </p>
         <p><b>Email address:</b><br>{% if object.email %}
-            {{ object.email }}
+            {{ object.email }} ( <a href="{% url 'update-email' object.id %}">Edit</a>
+                 | <a href="{% url 'delete-email' object.id %}">Delete</a> )
             {% else %}
             <a href="{% url 'create-email' object.id%}">Add email address</a>
-            {% endif %} ( <a href="{% url 'update-email' object.id %}">Edit</a> )
+            {% endif %}
         </p>
         <p>
         <dl>

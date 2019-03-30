@@ -27,18 +27,18 @@
                         </td>
                         <td>
                             <a href="{% url 'delete-contact' contact.id %}"
-                                class="btn btn-danger btn-xs" data-toggle="tooltip">Delete</a>
+                               class="btn btn-danger btn-xs" data-toggle="tooltip">Delete</a>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
+            <div class="container">
+                <p><a href="{% url 'create-contact' %}">New contact</a></p>
+            </div>
         {% else %}
-            <p >No contact registered yet</p>
+            <div id="empty">No contact registered yet, <a href="{% url 'create-contact' %}">add first contact</a></div>
         {% endif %}
-    </div>
-    <div class="container">
-        <p><a href="{% url 'create-contact' %}">New contact</a></p>
     </div>
 
 {% endblock %}

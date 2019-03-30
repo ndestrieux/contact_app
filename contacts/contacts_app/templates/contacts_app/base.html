@@ -15,10 +15,18 @@
     <div class="container my-5 text-center">
         <img src="{% static "logo.png" %}" alt="My image">
     </div>
-    <div class="container my-5 text-center">
-        <h1>Contact box</h1>
+    <div class="container my-5">
+        <h1 class="logo">Contact box</h1>
+        <strong>
+            <nav>
+                <ul class="menu">
+                    <li><a href="{% url 'contact-list' %}">Home</a></li>
+                </ul>
+            </nav>
+        </strong>
     </div>
 </header>
+<hr>
 <main>
     <div class="container">
         {% if messages %}
@@ -31,7 +39,7 @@
     {% block content %}
     {% endblock %}
 </main>
-<footer class="text-center">
+<footer class="page-footer text-center">
     <div class="container">
         | <a href="http://www.coderslab.pl">CodersLab</a> |
         <a href="https://www.djangoproject.com">Django Documentation</a> |
