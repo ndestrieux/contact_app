@@ -1,0 +1,44 @@
+{% extends "contacts_app/base.html" %}
+
+{% block content %}
+
+    <div class="container">
+        <h2>Contact list</h2>
+    </div>
+    <div class="container">
+        {% if object_list %}
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Last name</th>
+                    <th>First name</th>
+                    <th class="action"></th>
+                    <th class="action"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for contact in object_list %}
+                    <tr>
+                        <td>{{ contact.last_name }}</td>
+                        <td><a href="{% url 'contact-details' contact.id %}">{{ contact.first_name }}</a></td>
+                        <td>
+                            <a href="{% url 'update-contact' contact.id %}"
+                               class="btn btn-primary btn-xs" data-toggle="tooltip">Edit</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'delete-contact' contact.id %}"
+                                class="btn btn-danger btn-xs" data-toggle="tooltip">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p >No contact registered yet</p>
+        {% endif %}
+    </div>
+    <div class="container">
+        <p><a href="{% url 'create-contact' %}">New contact</a></p>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "contacts_app/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="container">
+        <h2>Update contact</h2>
+        <form method="post">
+            {{ form|crispy }}
+            <input type="submit" class="btn btn-secondary" value="Update">
+            {% csrf_token %}
+        </form>
+    </div>
+
+{% endblock %}

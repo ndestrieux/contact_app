@@ -13,9 +13,39 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import include
 from django.contrib import admin
 from django.urls import path
 
+from contacts.settings import DEBUG
+from contacts_app.views import ContactListView, ContactDetailsView, CreateContactView, UpdateContactView, \
+    DeleteContactView, CreateAddressView, CreatePhoneView, CreateEmailView, UpdateAddressView, UpdatePhoneView, \
+    UpdateEmailView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('', ContactListView.as_view(), name="contact-list"),
+    path('show/<int:pk>', ContactDetailsView.as_view(), name="contact-details"),
+    path('new/', CreateContactView.as_view(), name="create-contact"),
+    path('modify/<int:pk>', UpdateContactView.as_view(), name="update-contact"),
+    path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
+
+    path('<int:pk>/add_address', CreateAddressView.as_view(), name="create-address"),
+    path('<int:pk>/add_phone', CreatePhoneView.as_view(), name="create-phone"),
+    path('<int:pk>/add_email', CreateEmailView.as_view(), name="create-email"),
+
+    path('<int:pk>/modify_address', UpdateAddressView.as_view(), name="update-address"),
+    path('<int:pk>/modify_phone', UpdatePhoneView.as_view(), name="update-phone"),
+    path('<int:pk>/modify_email', UpdateEmailView.as_view(), name="update-email"),
 ]
+
+if DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+
+    ] + urlpatterns
