@@ -37,6 +37,7 @@
             {% for group_object in object.groups.all %}
             <dd>{{ group_object }}</dd>
             {% endfor %}
+            <a href="{% url 'add-to-group' object.id%}">Manage groups</a>
         </dl>
         </p>
     </div>

@@ -18,9 +18,14 @@ from django.contrib import admin
 from django.urls import path
 
 from contacts.settings import DEBUG
-from contacts_app.views import ContactListView, ContactDetailsView, CreateContactView, UpdateContactView, \
-    DeleteContactView, CreateAddressView, CreatePhoneView, CreateEmailView, UpdateAddressView, UpdatePhoneView, \
-    UpdateEmailView, DeleteAddressView, DeletePhoneView, DeleteEmailView
+from contacts_app.views import (
+    ContactListView, ContactDetailsView, CreateContactView, UpdateContactView, DeleteContactView,
+    CreateAddressView, UpdateAddressView, DeleteAddressView,
+    CreatePhoneView, UpdatePhoneView, DeletePhoneView,
+    CreateEmailView, UpdateEmailView, DeleteEmailView,
+    AddContactToGroup,
+    GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,24 +37,33 @@ urlpatterns = [
     path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
 
     path('<int:pk>/add_address', CreateAddressView.as_view(), name="create-address"),
-    path('<int:pk>/add_phone', CreatePhoneView.as_view(), name="create-phone"),
-    path('<int:pk>/add_email', CreateEmailView.as_view(), name="create-email"),
-
     path('<int:pk>/modify_address', UpdateAddressView.as_view(), name="update-address"),
-    path('<int:pk>/modify_phone', UpdatePhoneView.as_view(), name="update-phone"),
-    path('<int:pk>/modify_email', UpdateEmailView.as_view(), name="update-email"),
-
     path('<int:pk>/delete_address', DeleteAddressView.as_view(), name="delete-address"),
+
+    path('<int:pk>/add_phone', CreatePhoneView.as_view(), name="create-phone"),
+    path('<int:pk>/modify_phone', UpdatePhoneView.as_view(), name="update-phone"),
     path('<int:pk>/delete_phone', DeletePhoneView.as_view(), name="delete-phone"),
+
+    path('<int:pk>/add_email', CreateEmailView.as_view(), name="create-email"),
+    path('<int:pk>/modify_email', UpdateEmailView.as_view(), name="update-email"),
     path('<int:pk>/delete_email', DeleteEmailView.as_view(), name="delete-email"),
+
+    path('<int:pk>/add_to_group', AddContactToGroup.as_view(), name='add-to-group'),
+
+    path('groups/', GroupListView.as_view(), name="group-list"),
+    path('groups/show/<int:pk>', GroupDetailView.as_view(), name="group-detail"),
+    path('groups/new', CreateGroupView.as_view(), name="create-group"),
+    path('groups/modify/<int:pk>', UpdateGroupView.as_view(), name="update-group"),
+    path('groups/delete/<int:pk>', DeleteGroupView.as_view(), name="delete-group"),
 ]
 
 if DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
+                      path('__debug__/', include(debug_toolbar.urls)),
 
-        # For django versions before 2.0:
-        # url(r'^__debug__/', include(debug_toolbar.urls)),
+                      # For django versions before 2.0:
+                      # url(r'^__debug__/', include(debug_toolbar.urls)),
 
-    ] + urlpatterns
+                  ] + urlpatterns

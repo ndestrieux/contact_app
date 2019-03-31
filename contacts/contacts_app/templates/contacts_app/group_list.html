@@ -3,30 +3,30 @@
 {% block content %}
 
     <div class="container">
-        <h2>Contact list</h2>
+        <h2>Group list</h2>
     </div>
     <div class="container">
         {% if object_list %}
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
-                    <th>Last name</th>
-                    <th>First name</th>
+                    <th>Name</th>
+                    <th>Description</th>
                     <th class="empty-column"></th>
                     <th class="empty-column"></th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for contact in object_list %}
+                {% for group in object_list %}
                     <tr>
-                        <td>{{ contact.last_name }}</td>
-                        <td><a href="{% url 'contact-details' contact.id %}">{{ contact.first_name }}</a></td>
+                        <td><a href="{% url 'group-detail' group.id %}">{{ group.name }}</a></td>
+                        <td>{{ group.description }}</td>
                         <td>
-                            <a href="{% url 'update-contact' contact.id %}"
+                            <a href="{% url 'update-group' group.id %}"
                                class="btn btn-primary btn-xs" data-toggle="tooltip">Edit</a>
                         </td>
                         <td>
-                            <a href="{% url 'delete-contact' contact.id %}"
+                            <a href="{% url 'delete-group' group.id %}"
                                class="btn btn-danger btn-xs" data-toggle="tooltip">Delete</a>
                         </td>
                     </tr>
@@ -34,10 +34,10 @@
                 </tbody>
             </table>
             <div class="container">
-                <p><a href="{% url 'create-contact' %}" class="btn btn-outline-primary">New contact</a></p>
+                <p><a href="{% url 'create-group' %}" class="btn btn-outline-primary">New group</a></p>
             </div>
         {% else %}
-            <div id="empty">No contact registered yet, <a href="{% url 'create-contact' %}">add first contact</a></div>
+            <div id="empty">No group registered yet, <a href="{% url 'create-group' %}">add first group</a></div>
         {% endif %}
     </div>
 

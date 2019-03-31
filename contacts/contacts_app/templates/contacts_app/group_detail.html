@@ -1,0 +1,21 @@
+{% extends "contacts_app/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container">
+        <h2>{{ object.name }} - group details</h2>
+        <hr>
+    </div>
+    <div class="container">
+        <p><b>Description:</b><br>{{ object.description }}</p>
+        <dl>
+            <dt>Members:</dt>
+            {% for person in object.person_set.all %}
+            <dd>{{ person }}</dd>
+            {% endfor %}
+        </dl>
+        </p>
+    </div>
+
+{% endblock %}

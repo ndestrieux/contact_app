@@ -8,7 +8,8 @@
         <h2>Create contact</h2>
         <form method="post">
             {{ form|crispy }}
-            <input type="submit" class="btn btn-secondary" value="Save">
+            <input type="submit" class="btn btn-outline-primary" value="Save">
+            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>
             {% csrf_token %}
         </form>
     </div>

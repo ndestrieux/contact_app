@@ -5,11 +5,11 @@
 {% block content %}
 
     <div class="container">
-        <h2>Delete address</h2>
+        <h2>Delete group</h2>
         <form id="empty" method="post">
-            <p>Are you sure you want to delete address: <b>{{ object }}</b>?</p>
+            <p>Are you sure you want to delete group <b>{{ object }}</b>? </p>
             <input type="submit" class="btn btn-outline-danger" value="Delete">
-            <a href="{% url 'contact-details' person_id %}" class="btn btn-outline-primary">Cancel</a>
+            <a href="{% url 'group-list' %}" class="btn btn-outline-primary">Cancel</a>
             {% csrf_token %}
         </form>
     </div>
