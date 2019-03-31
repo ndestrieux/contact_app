@@ -14,6 +14,7 @@ from contacts_app.models import Person, Address, Phone, Email, Group
 
 class ContactListView(ListView):
     model = Person
+    paginate_by = 10
 
     def get_queryset(self):
         return Person.objects.all().order_by("last_name")

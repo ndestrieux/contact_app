@@ -47,6 +47,10 @@ footer {
     width: 100px;
 }
 
+.pagination {
+    margin-bottom: 20px;
+}
+
 #messages   {
     height: 50px;
 }
