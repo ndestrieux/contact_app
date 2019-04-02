@@ -9,7 +9,7 @@
         <form method="post">
             {{ form|crispy }}
             <input type="submit" class="btn btn-outline-primary" value="Update">
-            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>
+            <a href="{% url 'group-list' %}" class="btn btn-outline-primary">Cancel</a>
             {% csrf_token %}
         </form>
     </div>

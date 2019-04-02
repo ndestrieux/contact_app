@@ -2,8 +2,12 @@
 
 {% block content %}
 
-    <div class="container">
-        <h2>Contact list</h2>
+    <div class="container d-flex d-flex justify-content-between" id="title">
+        <h2 class="d-inline-block mt-2">Contact list</h2>
+            <form class="form-inline align-self-start" method="GET">
+                <input class="form-control" name="search" type="text" placeholder="Search contact" aria-label="Search" {% if search %} value="{{ search }}" {% endif %}>
+                <button class="btn btn-info mx-2" type="submit" href="">Search</button>
+            </form>
     </div>
     <div class="container">
         {% if object_list %}
@@ -51,6 +55,8 @@
             <div class="container">
                 <p><a href="{% url 'create-contact' %}" class="btn btn-outline-primary">New contact</a></p>
             </div>
+        {% elif search%}
+            <div id="empty">No group matches your query</div>
         {% else %}
             <div id="empty">No contact registered yet, <a href="{% url 'create-contact' %}">add first contact</a></div>
         {% endif %}

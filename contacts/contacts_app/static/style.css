@@ -31,10 +31,6 @@ main {
     padding-bottom: 80px;
 }
 
-h2 {
-    padding: 25px 0 25px 0;
-}
-
 footer {
     position: absolute;
     bottom: 0;
@@ -53,6 +49,10 @@ footer {
 
 #messages   {
     height: 50px;
+}
+
+#title  {
+    padding: 25px 20px;
 }
 
 #empty {
