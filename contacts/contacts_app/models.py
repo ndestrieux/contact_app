@@ -2,7 +2,7 @@ from django.db import models
 
 
 PHONE_TYPE = (
-    (1, "NO DATA"),
+    (1, "unknown"),
     (2, "work - stationary"),
     (3, "home - stationary"),
     (4, "work - mobile"),
@@ -10,7 +10,7 @@ PHONE_TYPE = (
 )
 
 EMAIL_TYPE = (
-    (1, "NO DATA"),
+    (1, "unknown"),
     (2, "work"),
     (3, "home")
 )
@@ -31,7 +31,7 @@ class Address(models.Model):
 
 class Phone(models.Model):
     number = models.IntegerField()
-    type = models.IntegerField(choices=PHONE_TYPE)
+    type = models.IntegerField(choices=PHONE_TYPE, default=1, blank=True, null=True)
 
     def __str__(self):
         return f"{self.number} ({PHONE_TYPE[(self.type - 1)][1]})"
@@ -39,7 +39,7 @@ class Phone(models.Model):
 
 class Email(models.Model):
     address = models.CharField(max_length=128)
-    type = models.IntegerField(choices=EMAIL_TYPE)
+    type = models.IntegerField(choices=EMAIL_TYPE, default=1, blank=True, null=True)
 
     def __str__(self):
         return f"{self.address} ({EMAIL_TYPE[(self.type - 1)][1]})"
@@ -60,7 +60,7 @@ class Person(models.Model):
     address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
     phone = models.ForeignKey(Phone, null=True, blank=True, on_delete=models.SET_NULL)
     email = models.ForeignKey(Email, null=True, blank=True, on_delete=models.SET_NULL)
-    groups = models.ManyToManyField(Group, null=True, blank=True)
+    groups = models.ManyToManyField(Group)
 
     @property
     def name(self):

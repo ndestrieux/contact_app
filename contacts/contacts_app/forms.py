@@ -19,6 +19,13 @@ class PhoneForm(forms.ModelForm):
         error_messages={'invalid': 'Enter a valid phone number'},
     )
 
+    def clean_type(self):
+        phone_type = self.cleaned_data.get('type')
+        if phone_type is None:
+            return self.fields['type'].initial
+        else:
+            return phone_type
+
     class Meta:
         model = Phone
         fields = '__all__'
@@ -26,6 +33,13 @@ class PhoneForm(forms.ModelForm):
 
 class EmailForm(forms.ModelForm):
     address = forms.EmailField(error_messages={'invalid': 'Enter a valid email address'},)
+
+    def clean_type(self):
+        email_type = self.cleaned_data.get('type')
+        if email_type is None:
+            return self.fields['type'].initial
+        else:
+            return email_type
 
     class Meta:
         model = Email
