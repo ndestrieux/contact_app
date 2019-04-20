@@ -15,20 +15,26 @@ Including another URLconf
 """
 from django.conf.urls import include
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView, LoginView
 from django.urls import path
 
 from contacts.settings import DEBUG
 from contacts_app.views import (
+    UserRegistration,
     ContactListView, ContactDetailsView, CreateContactView, UpdateContactView, DeleteContactView,
     CreateAddressView, UpdateAddressView, DeleteAddressView,
     CreatePhoneView, UpdatePhoneView, DeletePhoneView,
     CreateEmailView, UpdateEmailView, DeleteEmailView,
     AddContactToGroup,
-    GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView
-)
+    GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView,
+    )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('register/', UserRegistration.as_view(), name="register"),
+    path('login/', LoginView.as_view(template_name="users/login.html"), name='login'),
+    path('logout/', LogoutView.as_view(template_name="users/logged_out.html"), name='logout'),
 
     path('', ContactListView.as_view(), name="contact-list"),
     path('show/<int:pk>', ContactDetailsView.as_view(), name="contact-details"),
@@ -36,19 +42,19 @@ urlpatterns = [
     path('modify/<int:pk>', UpdateContactView.as_view(), name="update-contact"),
     path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
 
-    path('<int:pk>/add_address', CreateAddressView.as_view(), name="create-address"),
-    path('<int:pk>/modify_address', UpdateAddressView.as_view(), name="update-address"),
-    path('<int:pk>/delete_address', DeleteAddressView.as_view(), name="delete-address"),
+    path('add_address/<int:pk>', CreateAddressView.as_view(), name="create-address"),
+    path('modify_address/<int:pk>', UpdateAddressView.as_view(), name="update-address"),
+    path('delete_address/<int:pk>', DeleteAddressView.as_view(), name="delete-address"),
 
-    path('<int:pk>/add_phone', CreatePhoneView.as_view(), name="create-phone"),
-    path('<int:pk>/modify_phone', UpdatePhoneView.as_view(), name="update-phone"),
-    path('<int:pk>/delete_phone', DeletePhoneView.as_view(), name="delete-phone"),
+    path('add_phone/<int:pk>', CreatePhoneView.as_view(), name="create-phone"),
+    path('modify_phone/<int:pk>', UpdatePhoneView.as_view(), name="update-phone"),
+    path('delete_phone/<int:pk>', DeletePhoneView.as_view(), name="delete-phone"),
 
-    path('<int:pk>/add_email', CreateEmailView.as_view(), name="create-email"),
-    path('<int:pk>/modify_email', UpdateEmailView.as_view(), name="update-email"),
-    path('<int:pk>/delete_email', DeleteEmailView.as_view(), name="delete-email"),
+    path('add_email/<int:pk>', CreateEmailView.as_view(), name="create-email"),
+    path('modify_email/<int:pk>', UpdateEmailView.as_view(), name="update-email"),
+    path('delete_email/<int:pk>', DeleteEmailView.as_view(), name="delete-email"),
 
-    path('<int:pk>/add_to_group', AddContactToGroup.as_view(), name='add-to-group'),
+    path('add_to_group/<int:pk>', AddContactToGroup.as_view(), name='add-to-group'),
 
     path('groups/', GroupListView.as_view(), name="group-list"),
     path('groups/show/<int:pk>', GroupDetailView.as_view(), name="group-detail"),

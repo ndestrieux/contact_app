@@ -5,11 +5,11 @@
 {% block content %}
 
     <div class="container">
-        <h2>Create group</h2>
+        <h2>Register</h2>
         <form method="post">
             {{ form|crispy }}
-            <input type="submit" class="btn btn-outline-primary" value="Save">
-            <a href="{% url 'group-list' %}" class="btn btn-outline-primary">Cancel</a>
+            <input type="submit" class="btn btn-outline-primary" value="Add">
+            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>
             {% csrf_token %}
         </form>
     </div>

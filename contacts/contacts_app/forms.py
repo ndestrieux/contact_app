@@ -1,7 +1,16 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django import forms
 
 from contacts_app.models import Person, Phone, Email
+
+
+class UserRegistrationForm(UserCreationForm):
+
+    class Meta:
+        model = User
+        fields = ['username', 'password1', 'password2']
 
 
 class PersonForm(forms.ModelForm):
