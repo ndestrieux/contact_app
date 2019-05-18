@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <div class="container d-flex d-flex justify-content-between" id="title">
+    <div class="d-flex d-flex justify-content-between" id="title">
         <h2 class="d-inline-block mt-2">Contact list</h2>
         <form class="form-inline align-self-start" method="GET">
             <input class="form-control" name="search" type="text" placeholder="Search contact" aria-label="Search"
@@ -25,10 +25,10 @@
                 {% for contact in object_list %}
                     <tr>
                         <td>{{ contact.last_name }}</td>
-                        <td><a href="{% url 'contact-details' contact.id %}">{{ contact.first_name }}</a></td>
+                        <td>{{ contact.first_name }}</td>
                         <td>
-                            <a href="{% url 'update-contact' contact.id %}"
-                               class="btn btn-primary btn-xs" data-toggle="tooltip">Edit</a>
+                            <a href="{% url 'contact-details' contact.id %}"
+                               class="btn btn-primary btn-xs" data-toggle="tooltip">View</a>
                         </td>
                         <td>
                             <a href="{% url 'delete-contact' contact.id %}"

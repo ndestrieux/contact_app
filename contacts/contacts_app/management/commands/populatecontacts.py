@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from contacts_app.models import Person, Address, Phone, Email, Group
 
 

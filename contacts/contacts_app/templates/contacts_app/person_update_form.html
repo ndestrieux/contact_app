@@ -1,17 +1,195 @@
 {% extends "contacts_app/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load octicons %}
 
 {% block content %}
 
     <div class="container">
-        <h2>Update contact</h2>
-        <form method="post">
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-outline-primary" value="Update">
-            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>
-            {% csrf_token %}
-        </form>
+        <h2>{{ person.name }} - contact details
+        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#person-modal">{% octicon 'pencil' %}</button>
+        </h2>
+        <small>{{ person.description }}</small>
+        <hr>
     </div>
+    <div class="container">
+        <dl>
+            <dt>Primary address:</dt>
+            {% for address in person.address_set.all %}
+                {% if address.type == 1 %}
+                    <dd>{{ address }}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#address-{{ address.id }}-modal">{% octicon 'pencil' %}</button>
+                        <a href="{% url 'delete-address' address.id %}">{% octicon 'trashcan' %}</a>
+                    </dd>
+                    {% elif address.type %}
+                {% endif %}
+            {% endfor %}
+            <dt>Secondary address:</dt>
+            {% for address in person.address_set.all %}
+                {% if address.type == 2 %}
+                    <dd>{{ address }}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#address-{{ address.id }}-modal">{% octicon 'pencil' %}</button>
+                        <a href="{% url 'delete-address' address.id %}">{% octicon 'trashcan' %}</a>
+                    </dd>
+                {% endif %}
+            {% endfor %}
+        </dl>
+        <dl>
+            <dt>Phone number:</dt>
+            {% if person.phone_set.all %}
+                {% for phone in person.phone_set.all %}
+                    <dd>{{ phone }}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#phone-{{ phone.id }}-modal">{% octicon 'pencil' %}</button>
+                        | <a href="{% url 'delete-phone' phone.id %}">Delete</a> )
+                    </dd>
+                {% endfor %}
+            {% endif %}
+            {#            <a href="{% url 'create-phone' object.id %}">Add phone number</a>#}
+        </dl>
+        <dl>
+            <dt>Email address:</dt>
+            {% if person.email_set.all %}
+                {% for email in person.email_set.all %}
+                    <dd>{{ email }}
+                        <button type="button" class="btn btn-default" data-toggle="modal"
+                                data-target="#email-{{ email.id }}-modal">{% octicon 'pencil' %}</button>
+                        | <a href="{% url 'delete-email' object.id %}">Delete</a> )
+                    </dd>
+                {% endfor %}
+            {% endif %}
+            {#            <a href="{% url 'create-email' object.id %}">Add email address</a>#}
+        </dl>
+        <p>
+        <dl>
+            <dt>Groups:</dt>
+            {% for group_object in person.groups.all %}
+                <dd>{{ group_object }}</dd>
+            {% endfor %}
+            {#            <a href="{% url 'add-to-group' object.id %}">Manage groups</a>#}
+        </dl>
+        </p>
+    </div>
+
+    {% include 'contacts_app/modals.html' %}
+
+{#       <div class="container">#}
+{#        <h2>Create contact</h2><br>#}
+{#        <form method="post">#}
+{#            <fieldset class="col-md-12 mb-8">#}
+{#                <div class="inline {{ form.prefix }} mb-4">#}
+{#                    <div class="card">#}
+{#                        <div class="card-body">#}
+{#                            {{ form|crispy }}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </fieldset>#}
+{#            <hr>#}
+{#            <div class="row">#}
+{#                {{ address_forms.management_form }}#}
+{#                {{ address_forms.non_form_errors }}#}
+{#                {{ address_forms.id }}#}
+{#                <fieldset class="col-md-6 mb-4">#}
+{#                    <legend>Primary address</legend>#}
+{#                    <div class="inline {{ address_forms.0.prefix }} mb-2">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                <small class="text-muted">Address</small>#}
+{#                                {{ address_forms.0|crispy }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </fieldset>#}
+{#                <hr>#}
+{#                <fieldset class="col-md-6 mb-4">#}
+{#                    <legend>Secondary address</legend>#}
+{#                    <div class="inline {{ address_forms.1.prefix }} mb-2">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                <small class="text-muted">Address</small>#}
+{#                                {{ address_forms.1|crispy }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </fieldset>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <h4>Phone number</h4>#}
+{#            <div class="form-buttons">#}
+{#                <a href="javascript:void(0)" class=" btn btn-danger btn-sm remove_form">Remove form</a>#}
+{#                <a href="javascript:void(0)" class="btn btn-primary btn-sm add_form">Add form</a>#}
+{#                <br>#}
+{#            </div>#}
+{#            <div class="row form_set">#}
+{#                {{ phone_forms.management_form }}#}
+{#                {{ phone_forms.non_form_errors }}#}
+{#                {% for phone_form in phone_forms %}#}
+{#                    {{ phone_form.id }}#}
+{#                    <fieldset class="col-md-6 mb-4">#}
+{#                        {{ phone_form.id }}#}
+{#                        <div class="inline {{ phone_form.prefix }} mb-2">#}
+{#                            <div class="card">#}
+{#                                <div class="card-body">#}
+{#                                    <small class="text-muted">Phone</small>#}
+{#                                    {{ phone_form|crispy }}#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </fieldset>#}
+{#                {% endfor %}#}
+{#                <div class="empty_form" style="display:none">#}
+{#                    <fieldset class="col-md-6 mb-4">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                <small class="text-muted">Phone</small>#}
+{#                                {{ phone_forms.empty_form|crispy }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </fieldset>#}
+{#                </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <h4>Email address</h4>#}
+{#            <div class="form-buttons">#}
+{#                <a href="javascript:void(0)" class=" btn btn-danger btn-sm remove_form">Remove form</a>#}
+{#                <a href="javascript:void(0)" class="btn btn-primary btn-sm add_form">Add form</a>#}
+{#                <br>#}
+{#            </div>#}
+{#            <div class="row form_set">#}
+{#                {{ email_forms.management_form }}#}
+{#                {{ email_forms.non_form_errors }}#}
+{#                {% for email_form in email_forms %}#}
+{#                    {{ email_form.id }}#}
+{#                    <fieldset class="col-md-6 mb-4">#}
+{#                    <div class="inline {{ email_form.prefix }} mb-2">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                <small class="text-muted">Email</small>#}
+{#                                {{ email_form|crispy }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#                </fieldset>#}
+{#                <div class="empty_form" style="display:none">#}
+{#                    <fieldset class="col-md-6 mb-4">#}
+{#                        <div class="card">#}
+{#                            <div class="card-body">#}
+{#                                <small class="text-muted">Email</small>#}
+{#                                {{ email_forms.empty_form|crispy }}#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </fieldset>#}
+{#                </div>#}
+{#            </div>#}
+{#            <input type="submit" class="btn btn-outline-primary" value="Save">#}
+{#            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>#}
+{#            {% csrf_token %}#}
+{#        </form>#}
+{#    </div>#}
 
 {% endblock %}
