@@ -42,7 +42,7 @@ footer {
 .octicon {
   display: inline-block;
   vertical-align: text-top;
-  fill: currentColor;
+  fill: #007bff;
 }
 
 th.empty-column {

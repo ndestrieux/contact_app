@@ -40,16 +40,10 @@ urlpatterns = [
     path('new/', CreateContactView.as_view(), name="create-contact"),
     path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
 
-    # path('add_address/<int:pk>/', CreateAddressView.as_view(), name="create-address"),
-    # path('modify_address/<int:pk>', UpdateAddressView.as_view(), name="update-address"),
     path('delete_address/<int:pk>', DeleteAddressView.as_view(), name="delete-address"),
 
-    # path('add_phone/<int:pk>', CreatePhoneView.as_view(), name="create-phone"),
-    # path('modify_phone/<int:pk>', UpdatePhoneView.as_view(), name="update-phone"),
     path('delete_phone/<int:pk>', DeletePhoneView.as_view(), name="delete-phone"),
 
-    # path('add_email/<int:pk>', CreateEmailView.as_view(), name="create-email"),
-    # path('modify_email/<int:pk>', UpdateEmailView.as_view(), name="update-email"),
     path('delete_email/<int:pk>', DeleteEmailView.as_view(), name="delete-email"),
 
     path('add_to_group/<int:pk>', AddContactToGroup.as_view(), name='add-to-group'),

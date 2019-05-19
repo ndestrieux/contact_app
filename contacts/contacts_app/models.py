@@ -39,11 +39,21 @@ class Person(models.Model):
     def name(self):
         return f"{self.first_name} {self.last_name}"
 
+    def get_primary_address(self):
+        return self.address_set.filter(type="1")
+
+    def get_secondary_address(self):
+        return self.address_set.filter(type="2")
+
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = ['first_name', 'last_name', ]
+
 
 class Address(models.Model):
+    # country = models.IntegerField(choices=)
     city = models.CharField(max_length=64)
     street = models.CharField(max_length=64)
     building_number = models.CharField(max_length=8, null=True, blank=True)
@@ -58,6 +68,9 @@ class Address(models.Model):
 
     def __str__(self):
         return self.full_address
+
+    class Meta:
+        unique_together = ['person', 'type', ]
 
 
 class Phone(models.Model):

@@ -42,7 +42,7 @@ class PhoneForm(forms.ModelForm):
     number = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     type = forms.ChoiceField(
         widget=forms.RadioSelect(),
-        choices=PHONE_TYPE[1:],
+        choices=PHONE_TYPE[0:],
         required=False
     )
 
@@ -65,7 +65,7 @@ class EmailForm(forms.ModelForm):
     address = forms.EmailField(error_messages={'invalid': 'Enter a valid email address'},)
     type = forms.ChoiceField(
         widget=forms.RadioSelect(),
-        choices=EMAIL_TYPE[1:],
+        choices=EMAIL_TYPE[0:],
         required=False
     )
 
@@ -96,6 +96,15 @@ class AddressFormSet(InlineFormSet):
     form_class = AddressForm
     factory_kwargs = {'extra': 2, 'max_num': 2, 'can_delete': False}
     initial = [{'type': 1}, {'type': 2}]
+
+    def get_initial(self):
+        initial = self.initial[:]
+        if 'pk' in self.kwargs:
+            if Address.objects.filter(person_id=self.kwargs['pk'], type=1).exists():
+                initial.remove({'type': 1})
+            if Address.objects.filter(person_id=self.kwargs['pk'], type=2).exists():
+                initial.remove({'type': 2})
+        return initial
 
 
 class PhoneFormSet(InlineFormSet):
