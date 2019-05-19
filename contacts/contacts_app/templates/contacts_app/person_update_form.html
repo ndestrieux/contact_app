@@ -21,6 +21,7 @@
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#address-{{ person.get_primary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
                 <a href="{% url 'delete-address' person.get_primary_address.get.id %}">{% octicon 'trashcan' %}</a>
+                <a href="{% url 'address-details' person.get_primary_address.get.id %}">{% octicon 'globe' %}</a>
             {% else %}
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#address-None-modal">{% octicon 'plus' %} add primary address</a>
@@ -32,6 +33,7 @@
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#address-{{ person.get_secondary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
                 <a href="{% url 'delete-address' person.get_secondary_address.get.id %}">{% octicon 'trashcan' %}</a>
+                <a href="{% url 'address-details' person.get_secondary_address.get.id %}">{% octicon 'globe' %}</a>
             {% else %}
                 <a href="javascript:void(0)" data-toggle="modal"
                    data-target="#address-None-modal">{% octicon 'plus' %} add secondary address</a>

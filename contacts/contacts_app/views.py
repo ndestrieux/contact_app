@@ -1,14 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from extra_views import CreateWithInlinesView, NamedFormsetsMixin, UpdateWithInlinesView
 
-from contacts_app.forms import PersonForm, PhoneForm, EmailForm, ContactGroupForm, UserRegistrationForm, PhoneFormSet, \
-    EmailFormSet, AddressFormSet, AddressForm
+from contacts_app.forms import PersonForm, ContactGroupForm, UserRegistrationForm, PhoneFormSet, \
+    EmailFormSet, AddressFormSet
 from contacts_app.models import Person, Address, Phone, Email, Group
 
 
@@ -23,7 +21,7 @@ class UserRegistration(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('login')
 
 
-#
+# Formset Success Message Mixin
 
 class FormSetSuccessMessageMixin(object):
     success_message = ''
@@ -59,20 +57,6 @@ class ContactListView(LoginRequiredMixin, ListView):
         return data
 
 
-# class ContactDetailsView(LoginRequiredMixin, DetailView):
-#     model = Person
-#
-#     def get_context_data(self, *args, **kwargs):
-#         data = super().get_context_data(*args, **kwargs)
-#         primary_address = Address.objects.filter(person_id=self.kwargs.get('pk'), type=1)
-#         secondary_address = Address.objects.filter(person_id=self.kwargs.get('pk'), type=2)
-#         if len(primary_address) != 0:
-#             data['primary_address'] = primary_address[0]
-#         if len(secondary_address) != 0:
-#             data['secondary_address'] = secondary_address[0]
-#         return data
-
-
 class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, CreateWithInlinesView):
     model = Person
     form_class = PersonForm
@@ -82,16 +66,18 @@ class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFor
     success_message = "Contact %(first_name)s %(last_name)s created"
 
 
-class UpdateContactView(LoginRequiredMixin, NamedFormsetsMixin, UpdateWithInlinesView):
+class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, UpdateWithInlinesView):
     model = Person
     form_class = PersonForm
     template_name_suffix = '_update_form'
     inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
     inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
-    success_message = "Contact %(first_name)s %(last_name)s updated"
+    success_message = "Contact %(first_name)s %(last_name)s updated successfully"
 
     def get_success_url(self):
         return reverse_lazy('contact-details', args=(self.object.id,))
+
+    # TODO bug when sending form when form is incorrect
 
 
 class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -105,50 +91,21 @@ class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return super(DeleteContactView, self).delete(request, *args, **kwargs)
 
 
-# Person object mix-in
-
-# class PersonObjectMixin(object):
-#     model = Person
-#
-#     # def get_context_data(self, **kwargs):
-#     #     context = super().get_context_data(**kwargs)
-#     #     context['person_id'] = self.kwargs.get("pk")
-#     #     return context
-#
-#     def get_success_url(self):
-#         person_id = self.kwargs.get("pk")
-#         return reverse('contact-details', args=(person_id,))
-
-
 # Address views
 
-# class CreateAddressView(LoginRequiredMixin, CreateView):
-#     model = Address
-#     fields = '__all__'
-#
-#     # def form_valid(self, form):
-#     #     id = self.kwargs.get(self.pk_url_kwarg)
-#     #     self.object = form.save()
-#     #     Person.objects.filter(pk=id).update(address=self.object.id)
-#     #     return HttpResponseRedirect(self.get_success_url())
+class AddressDetailView(LoginRequiredMixin, DetailView):
+    model = Address
 
-
-# class UpdateAddressView(LoginRequiredMixin, UpdateView):
-#     model = Address
-#     form_class = AddressForm
-#     template_name_suffix = '_update_form'
-
-# def get_object(self):
-#     id = self.kwargs.get(self.pk_url_kwarg)
-#     object = get_object_or_404(Person, id=id).address_set.all()[0]
-#     # TODO check if possible to use 2 pk in url, one for the person, one for the address
-#     return object
-
-# def form_valid(self, form):
-#     id = self.kwargs.get(self.pk_url_kwarg)
-#     self.object = form.save()
-#     Person.objects.filter(pk=id).update(address=self.object.id)
-#     return HttpResponseRedirect(self.get_success_url())
+    # def get_context_data(self, **kwargs):
+    #     data = super(AddressDetailView, self).get_context_data(**kwargs)
+    #     location = f"{self.object.street} {self.object.building_number if self.object.building_number else ''} " \
+    #         f"{self.object.city} {self.object.country.name}"
+    #     loc = Nominatim().geocode(location)
+    #     latlng = [loc.latitude, loc.longitude]
+    #     address_map = Map(location=latlng, zoom_start=18)
+    #     address_map.add_child(Marker(location=latlng, popup=loc.address, icon=Icon(color='red')))
+    #     data['map'] = address_map._repr_html_()
+    #     return data
 
 
 class DeleteAddressView(LoginRequiredMixin, DeleteView):
@@ -160,35 +117,6 @@ class DeleteAddressView(LoginRequiredMixin, DeleteView):
 
 # Phone views
 
-# class CreatePhoneView(LoginRequiredMixin, CreateView):
-#     model = Phone
-#     form_class = PhoneForm
-#
-#     # def form_valid(self, form):
-#     #     id = self.kwargs.get(self.pk_url_kwarg)
-#     #     self.object = form.save()
-#     #     Person.objects.filter(pk=id).update(phone=self.object.id)
-#     #     return HttpResponseRedirect(self.get_success_url())
-#
-#
-# class UpdatePhoneView(LoginRequiredMixin, UpdateView):
-#     model = Phone
-#     form_class = PhoneForm
-#     template_name_suffix = '_update_form'
-#
-#     def get_object(self):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         object = get_object_or_404(Person, id=id).phone
-#         # TODO check if possible to use 2 pk in url, one for the person, one for the phone number
-#         return object
-#
-#     def form_valid(self, form):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         self.object = form.save()
-#         Person.objects.filter(pk=id).update(phone=self.object.id)
-#         return HttpResponseRedirect(self.get_success_url())
-
-
 class DeletePhoneView(LoginRequiredMixin, DeleteView):
     model = Phone
 
@@ -197,35 +125,6 @@ class DeletePhoneView(LoginRequiredMixin, DeleteView):
 
 
 # Email views
-
-# class CreateEmailView(LoginRequiredMixin, CreateView):
-#     model = Email
-#     form_class = EmailForm
-#
-#     def form_valid(self, form):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         self.object = form.save()
-#         Person.objects.filter(pk=id).update(email=self.object.id)
-#         return HttpResponseRedirect(self.get_success_url())
-#
-#
-# class UpdateEmailView(LoginRequiredMixin, UpdateView):
-#     model = Email
-#     form_class = EmailForm
-#     template_name_suffix = '_update_form'
-#
-#     def get_object(self):
-#         id = self.kwargs.get(self.pk_url_kwarg)
-#         object = get_object_or_404(Person, id=id).email
-#         # TODO check if possible to use 2 pk in url, one for the person, one for the email
-#         return object
-
-# def form_valid(self, form):
-#     id = self.kwargs.get(self.pk_url_kwarg)
-#     self.object = form.save()
-#     Person.objects.filter(pk=id).update(email=self.object.id)
-#     return HttpResponseRedirect(self.get_success_url())
-
 
 class DeleteEmailView(LoginRequiredMixin, DeleteView):
     model = Email

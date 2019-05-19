@@ -26,7 +26,7 @@ from contacts_app.views import (
     DeleteEmailView,
     AddContactToGroup,
     GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView,
-    UpdateContactView)
+    UpdateContactView, AddressDetailView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,6 +40,7 @@ urlpatterns = [
     path('new/', CreateContactView.as_view(), name="create-contact"),
     path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
 
+    path('address_map/<int:pk>', AddressDetailView.as_view(), name="address-details"),
     path('delete_address/<int:pk>', DeleteAddressView.as_view(), name="delete-address"),
 
     path('delete_phone/<int:pk>', DeletePhoneView.as_view(), name="delete-phone"),

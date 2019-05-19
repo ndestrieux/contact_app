@@ -1,4 +1,7 @@
 from django.db import models
+from django_countries.fields import CountryField
+from folium import Map, Marker, Icon
+from geopy import Nominatim
 
 
 ADDRESS_TYPE = (
@@ -53,7 +56,7 @@ class Person(models.Model):
 
 
 class Address(models.Model):
-    # country = models.IntegerField(choices=)
+    country = CountryField(blank_label='(select country)')
     city = models.CharField(max_length=64)
     street = models.CharField(max_length=64)
     building_number = models.CharField(max_length=8, null=True, blank=True)
@@ -64,7 +67,16 @@ class Address(models.Model):
     @property
     def full_address(self):
         return f"{self.street}, {'nr ' + self.building_number + ', ' if self.building_number else ''}" \
-            f"{'flat ' + self.flat_number + ', ' if self.flat_number else ''} {self.city}"
+            f"{'flat ' + self.flat_number + ', ' if self.flat_number else ''} {self.city} - {self.country.name}"
+
+    def get_map(self):
+        location = f"{self.street} {self.building_number if self.building_number else ''} " \
+            f"{self.city} {self.country.name}"
+        loc = Nominatim().geocode(location)
+        latlng = [loc.latitude, loc.longitude]
+        address_map = Map(location=latlng, zoom_start=18)
+        address_map.add_child(Marker(location=latlng, popup=loc.address, icon=Icon(color='red')))
+        return address_map._repr_html_()
 
     def __str__(self):
         return self.full_address

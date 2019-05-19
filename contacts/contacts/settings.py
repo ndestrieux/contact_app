@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'extra_views',
     'octicons',
+    'django_countries',
 
     'contacts_app',
 ]

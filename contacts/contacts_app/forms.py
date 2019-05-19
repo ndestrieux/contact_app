@@ -1,8 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import RegexValidator
 from django import forms
-from extra_views import InlineFormSet
+from extra_views import InlineFormSetFactory
 
 from contacts_app.models import Person, Phone, Email, Address, PHONE_TYPE, EMAIL_TYPE
 
@@ -91,7 +91,7 @@ class ContactGroupForm(forms.ModelForm):
         }
 
 
-class AddressFormSet(InlineFormSet):
+class AddressFormSet(InlineFormSetFactory):
     model = Address
     form_class = AddressForm
     factory_kwargs = {'extra': 2, 'max_num': 2, 'can_delete': False}
@@ -107,13 +107,13 @@ class AddressFormSet(InlineFormSet):
         return initial
 
 
-class PhoneFormSet(InlineFormSet):
+class PhoneFormSet(InlineFormSetFactory):
     model = Phone
     form_class = PhoneForm
     factory_kwargs = {'extra': 1, 'can_delete': False}
 
 
-class EmailFormSet(InlineFormSet):
+class EmailFormSet(InlineFormSetFactory):
     model = Email
     form_class = EmailForm
     factory_kwargs = {'extra': 1, 'can_delete': False}
