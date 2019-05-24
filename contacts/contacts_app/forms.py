@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.validators import RegexValidator
 from django import forms
 from extra_views import InlineFormSetFactory
@@ -20,25 +20,20 @@ class PersonForm(forms.ModelForm):
 
     class Meta:
         model = Person
-        fields = ['first_name', 'last_name', 'description']
+        exclude = ['groups', 'created_by', ]
 
 
 class AddressForm(forms.ModelForm):
 
     class Meta:
         model = Address
-        exclude = ['person', ]
+        exclude = ['person', 'created_by', ]
         widgets = {
             'type': forms.HiddenInput()
         }
 
 
 class PhoneForm(forms.ModelForm):
-    # number = forms.CharField(
-    #     widget=forms.TextInput(attrs={'type': 'number'}),
-    #     validators=[MinValueValidator(1), MaxValueValidator(9999999999999999)],
-    #     error_messages={'invalid': 'Enter a valid phone number'},
-    # )
     number = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     type = forms.ChoiceField(
         widget=forms.RadioSelect(),
@@ -55,7 +50,7 @@ class PhoneForm(forms.ModelForm):
 
     class Meta:
         model = Phone
-        exclude = ['person', ]
+        exclude = ['person', 'created_by', ]
         widgets = {
             'phone': forms.TextInput()
         }
@@ -78,16 +73,25 @@ class EmailForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        exclude = ['person', ]
+        exclude = ['person', 'created_by', ]
 
 
 class ContactGroupForm(forms.ModelForm):
+
+    # def __init__(self, *args, **kwargs):
+    #     print(args)
+    #     print(kwargs.get('instance'))
+    #     super(ContactGroupForm, self).__init__(*args, **kwargs)
+    #     # self.fields['groups'].queryset = Group.objects.filter(created_by=)
 
     class Meta:
         model = Person
         fields = ['groups']
         labels = {
             'groups': ''
+        }
+        widgets = {
+            'groups': forms.SelectMultiple()
         }
 
 

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from extra_views import CreateWithInlinesView, NamedFormsetsMixin, UpdateWithInlinesView
@@ -44,11 +45,12 @@ class ContactListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        current_user_person_query = Person.objects.filter(created_by=self.request.user)
         search = self.request.GET.get("search")
         if search is None:
             search = ""
-        return (Person.objects.filter(first_name__icontains=search)
-                | Person.objects.filter(last_name__icontains=search)) \
+        return (current_user_person_query.filter(first_name__icontains=search)
+                | current_user_person_query.filter(last_name__icontains=search)) \
             .order_by("last_name")
 
     def get_context_data(self, *args, **kwargs):
@@ -69,21 +71,28 @@ class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFor
 class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, UpdateWithInlinesView):
     model = Person
     form_class = PersonForm
+    group_form_class = ContactGroupForm
     template_name_suffix = '_update_form'
     inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
     inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
     success_message = "Contact %(first_name)s %(last_name)s updated successfully"
 
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
     def get_success_url(self):
         return reverse_lazy('contact-details', args=(self.object.id,))
-
-    # TODO bug when sending form when form is incorrect
 
 
 class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Person
     success_url = reverse_lazy('contact-list')
     success_message = "Contact %(first_name)s %(last_name)s deleted"
+
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -96,20 +105,17 @@ class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
 class AddressDetailView(LoginRequiredMixin, DetailView):
     model = Address
 
-    # def get_context_data(self, **kwargs):
-    #     data = super(AddressDetailView, self).get_context_data(**kwargs)
-    #     location = f"{self.object.street} {self.object.building_number if self.object.building_number else ''} " \
-    #         f"{self.object.city} {self.object.country.name}"
-    #     loc = Nominatim().geocode(location)
-    #     latlng = [loc.latitude, loc.longitude]
-    #     address_map = Map(location=latlng, zoom_start=18)
-    #     address_map.add_child(Marker(location=latlng, popup=loc.address, icon=Icon(color='red')))
-    #     data['map'] = address_map._repr_html_()
-    #     return data
+    def get_queryset(self):
+        get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
 
 class DeleteAddressView(LoginRequiredMixin, DeleteView):
     model = Address
+
+    def get_queryset(self):
+        get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def get_success_url(self):
         return reverse_lazy('contact-details', args=(self.object.person_id,))
@@ -120,6 +126,10 @@ class DeleteAddressView(LoginRequiredMixin, DeleteView):
 class DeletePhoneView(LoginRequiredMixin, DeleteView):
     model = Phone
 
+    def get_queryset(self):
+        get_object_or_404(Phone, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
     def get_success_url(self):
         return reverse_lazy('contact-details', args=(self.object.person_id,))
 
@@ -128,6 +138,10 @@ class DeletePhoneView(LoginRequiredMixin, DeleteView):
 
 class DeleteEmailView(LoginRequiredMixin, DeleteView):
     model = Email
+
+    def get_queryset(self):
+        get_object_or_404(Email, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def get_success_url(self):
         return reverse_lazy('contact-details', args=(self.object.person_id,))
@@ -138,6 +152,18 @@ class AddContactToGroup(LoginRequiredMixin, UpdateView):
     form_class = ContactGroupForm
     template_name = 'contacts_app/add_contact_to_group.html'
 
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.fields['groups'].queryset = Group.objects.filter(created_by=self.request.user.pk)
+        return form
+
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.id,))
+
 
 # Group views
 
@@ -146,10 +172,11 @@ class GroupListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        current_user_group_query = Group.objects.filter(created_by=self.request.user)
         search = self.request.GET.get("search")
         if search is None:
             search = ""
-        return Group.objects.filter(name__icontains=search).order_by("name")
+        return current_user_group_query.filter(name__icontains=search).order_by("name")
 
     def get_context_data(self, *args, **kwargs):
         data = super().get_context_data(*args, **kwargs)
@@ -160,10 +187,14 @@ class GroupListView(LoginRequiredMixin, ListView):
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
 
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
 
 class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Group
-    fields = '__all__'
+    fields = ['name', 'description', ]
     success_url = reverse_lazy('group-list')
     success_message = "New group added - %(name)s"
 
@@ -175,11 +206,19 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s updated"
 
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
 
 class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s deleted"
+
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()

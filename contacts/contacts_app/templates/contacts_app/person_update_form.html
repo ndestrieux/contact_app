@@ -70,7 +70,7 @@
             {% for group_object in person.groups.all %}
                 <dd>{{ group_object }}</dd>
             {% endfor %}
-            {#            <a href="{% url 'add-to-group' object.id %}">Manage groups</a>#}
+            <a href="{% url 'add-to-group' person.id %}">{% octicon 'plus' %} add/remove groups</a>
         </dl>
         </p>
     </div>

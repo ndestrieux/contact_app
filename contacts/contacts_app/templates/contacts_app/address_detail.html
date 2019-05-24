@@ -2,8 +2,17 @@
 
 {% block content %}
 
-    {{ address }}
-
-    {{ address.get_map|safe }}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ address.person }} - {{ address }}</h5>
+                {% if address.get_map %}
+                    {{ address.get_map|safe }}
+                {% else %}
+                    <div id="empty">There's not map to show</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

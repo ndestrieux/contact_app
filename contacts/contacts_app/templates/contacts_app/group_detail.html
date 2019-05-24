@@ -4,11 +4,11 @@
 
 {% block content %}
     <div class="container">
-        <h2>{{ object.name }} - group details</h2>
+        <h2>Group {{ object.name }}</h2>
+        <small>{{ person.description }}</small>
         <hr>
     </div>
     <div class="container">
-        <p><b>Description:</b><br>{{ object.description }}</p>
         <dl>
             <dt>Members:</dt>
             {% for person in object.person_set.all %}

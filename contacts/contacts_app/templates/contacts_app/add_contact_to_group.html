@@ -11,7 +11,7 @@
         <form method="post">
             {{ form|crispy }}
             <input type="submit" class="btn btn-outline-primary" value="Save">
-            <a href="{% url 'contact-details' person_id %}" class="btn btn-outline-primary">Cancel</a>
+            <a href="{% url 'contact-details' person.id %}" class="btn btn-outline-primary">Cancel</a>
             {% csrf_token %}
         </form>
     </div>

@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django_countries.fields import CountryField
+from django_currentuser.db.models import CurrentUserField
 from folium import Map, Marker, Icon
 from geopy import Nominatim
 
@@ -27,9 +29,13 @@ EMAIL_TYPE = (
 class Group(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
+    created_by = CurrentUserField(related_name='group_created_by')
 
     def __str__(self):
         return f"{self.name}"
+
+    class Meta:
+        ordering = ['name', ]
 
 
 class Person(models.Model):
@@ -37,6 +43,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=32)
     description = models.TextField(null=True, blank=True)
     groups = models.ManyToManyField(Group)
+    created_by = CurrentUserField(related_name='person_created_by')
 
     @property
     def name(self):
@@ -63,6 +70,7 @@ class Address(models.Model):
     flat_number = models.CharField(max_length=8, null=True, blank=True)
     type = models.IntegerField(choices=ADDRESS_TYPE)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
+    created_by = CurrentUserField(related_name='address_created_by')
 
     @property
     def full_address(self):
@@ -72,11 +80,14 @@ class Address(models.Model):
     def get_map(self):
         location = f"{self.street} {self.building_number if self.building_number else ''} " \
             f"{self.city} {self.country.name}"
-        loc = Nominatim().geocode(location)
-        latlng = [loc.latitude, loc.longitude]
-        address_map = Map(location=latlng, zoom_start=18)
-        address_map.add_child(Marker(location=latlng, popup=loc.address, icon=Icon(color='red')))
-        return address_map._repr_html_()
+        loc = Nominatim(user_agent='nd_contact_box').geocode(location)
+        if loc is not None:
+            latlng = [loc.latitude, loc.longitude]
+            address_map = Map(location=latlng, zoom_start=18)
+            address_map.add_child(Marker(location=latlng, popup=loc.address, icon=Icon(color='red')))
+            return address_map._repr_html_()
+        else:
+            return None
 
     def __str__(self):
         return self.full_address
@@ -89,6 +100,7 @@ class Phone(models.Model):
     number = models.IntegerField()
     type = models.IntegerField(choices=PHONE_TYPE, default=1, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
+    created_by = CurrentUserField(related_name='phone_created_by')
 
     def __str__(self):
         return f"{self.number}"
@@ -98,6 +110,7 @@ class Email(models.Model):
     address = models.CharField(max_length=128)
     type = models.IntegerField(choices=EMAIL_TYPE, default=1, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
+    created_by = CurrentUserField(related_name='email_created_by')
 
     def __str__(self):
         return f"{self.address}"
