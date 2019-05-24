@@ -44,25 +44,4 @@ $(document).ready(function () {
         }
     });
 
-    // $('#modal').on('show.bs.modal', function (event) {
-    //     var modal = $(this);
-    //     $.ajax({
-    //         url: "{% url 'contact-details' %}",
-    //         context: document.body
-    //     }).done(function (response) {
-    //         console.log(response)
-    //         modal.html(response);
-    //     });
-    // });
-    //
-    // const form_options = {
-    //     target: '.submit', success: function (response) {}
-    // };
-    // console.log(form_options)
-    // $('#person-update').ajaxForm(form_options);
-
-//     $(window).on('shown.bs.modal', function() {
-//         alert('shown');
-// });
-
 });

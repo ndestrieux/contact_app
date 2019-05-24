@@ -78,20 +78,11 @@ class EmailForm(forms.ModelForm):
 
 class ContactGroupForm(forms.ModelForm):
 
-    # def __init__(self, *args, **kwargs):
-    #     print(args)
-    #     print(kwargs.get('instance'))
-    #     super(ContactGroupForm, self).__init__(*args, **kwargs)
-    #     # self.fields['groups'].queryset = Group.objects.filter(created_by=)
-
     class Meta:
         model = Person
         fields = ['groups']
         labels = {
             'groups': ''
-        }
-        widgets = {
-            'groups': forms.SelectMultiple()
         }
 
 

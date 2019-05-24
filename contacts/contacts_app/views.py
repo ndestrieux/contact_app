@@ -201,7 +201,7 @@ class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Group
-    fields = '__all__'
+    fields = ['name', 'description', ]
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s updated"
