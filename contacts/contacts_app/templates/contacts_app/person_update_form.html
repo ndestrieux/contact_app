@@ -1,17 +1,80 @@
 {% extends "contacts_app/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load octicons %}
 
 {% block content %}
 
     <div class="container">
-        <h2>Update contact</h2>
-        <form method="post">
-            {{ form|crispy }}
-            <input type="submit" class="btn btn-outline-primary" value="Update">
-            <a href="{% url 'contact-list' %}" class="btn btn-outline-primary">Cancel</a>
-            {% csrf_token %}
-        </form>
+        <h2>{{ person.name }} - contact details
+            <a href="javascript:void(0)" class="btn btn-default btn-sm" data-toggle="modal"
+               data-target="#person-modal">{% octicon 'pencil' %}</a>
+        </h2>
+        <small>{{ person.description }}</small>
+        <hr>
     </div>
+    <div class="container">
+        <dl>
+            <dt>Primary address:</dt>
+            {% if person.get_primary_address.exists %}
+                <dd>{{ person.get_primary_address.get }}
+                <a href="javascript:void(0)" data-toggle="modal"
+                   data-target="#address-{{ person.get_primary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
+                <a href="{% url 'delete-address' person.get_primary_address.get.id %}">{% octicon 'trashcan' %}</a>
+                <a href="{% url 'address-details' person.get_primary_address.get.id %}">{% octicon 'globe' %}</a>
+            {% else %}
+                <a href="javascript:void(0)" data-toggle="modal"
+                   data-target="#address-None-modal">{% octicon 'plus' %} add primary address</a>
+            {% endif %}
+            </dd>
+            <dt>Secondary address:</dt>
+            {% if person.get_secondary_address.exists %}
+                <dd>{{ person.get_secondary_address.get }}
+                <a href="javascript:void(0)" data-toggle="modal"
+                   data-target="#address-{{ person.get_secondary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
+                <a href="{% url 'delete-address' person.get_secondary_address.get.id %}">{% octicon 'trashcan' %}</a>
+                <a href="{% url 'address-details' person.get_secondary_address.get.id %}">{% octicon 'globe' %}</a>
+            {% else %}
+                <a href="javascript:void(0)" data-toggle="modal"
+                   data-target="#address-None-modal">{% octicon 'plus' %} add secondary address</a>
+            {% endif %}
+            </dd>
+        </dl>
+        <dl>
+            <dt>Phone number:</dt>
+            {% for phone in person.phone_set.all %}
+                <dd>{{ phone }}
+                    <a href="javascript:void(0)" data-toggle="modal"
+                       data-target="#phone-{{ phone.id }}-modal">{% octicon 'pencil' %}</a>
+                    <a href="{% url 'delete-phone' phone.id %}">{% octicon 'trashcan' %}</a>
+                </dd>
+            {% endfor %}
+            <a href="javascript:void(0)" data-toggle="modal"
+               data-target="#phone-None-modal">{% octicon 'plus' %} add phone number</a>
+        </dl>
+        <dl>
+            <dt>Email address:</dt>
+            {% for email in person.email_set.all %}
+                <dd>{{ email }}
+                    <a href="javascript:void(0)" data-toggle="modal"
+                       data-target="#email-{{ email.id }}-modal">{% octicon 'pencil' %}</a>
+                    <a href="{% url 'delete-email' email.id %}">{% octicon 'trashcan' %}</a>
+                </dd>
+            {% endfor %}
+            <a href="javascript:void(0)" data-toggle="modal"
+               data-target="#email-None-modal">{% octicon 'plus' %} add mail address</a>
+        </dl>
+        <p>
+        <dl>
+            <dt>Groups:</dt>
+            {% for group_object in person.groups.all %}
+                <dd>{{ group_object }}</dd>
+            {% endfor %}
+            <a href="{% url 'add-to-group' person.id %}">{% octicon 'plus' %} add/remove groups</a>
+        </dl>
+        </p>
+    </div>
+
+    {% include 'contacts_app/modals.html' %}
 
 {% endblock %}

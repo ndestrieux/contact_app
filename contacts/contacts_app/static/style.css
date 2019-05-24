@@ -39,8 +39,18 @@ footer {
     height: 150px;
 }
 
-.empty-column {
+.octicon {
+  display: inline-block;
+  vertical-align: text-top;
+  fill: #007bff;
+}
+
+th.empty-column {
     width: 100px;
+}
+
+.form-buttons   {
+    margin-bottom: 10px;
 }
 
 .pagination {

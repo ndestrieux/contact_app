@@ -1,28 +1,56 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from extra_views import CreateWithInlinesView, NamedFormsetsMixin, UpdateWithInlinesView
 
-from contacts_app.forms import PersonForm, PhoneForm, EmailForm, ContactGroupForm
+from contacts_app.forms import PersonForm, ContactGroupForm, UserRegistrationForm, PhoneFormSet, \
+    EmailFormSet, AddressFormSet
 from contacts_app.models import Person, Address, Phone, Email, Group
 
 
 # Create your views here.
 
+# User registration view
+
+class UserRegistration(SuccessMessageMixin, CreateView):
+    form_class = UserRegistrationForm
+    template_name = 'users/registration.html'
+    success_message = "User %(username)s has been registered"
+    success_url = reverse_lazy('login')
+
+
+# Formset Success Message Mixin
+
+class FormSetSuccessMessageMixin(object):
+    success_message = ''
+
+    def forms_valid(self, form, inlines):
+        response = super(FormSetSuccessMessageMixin, self).forms_valid(form, inlines)
+        success_message = self.get_success_message(form.cleaned_data)
+        if success_message:
+            messages.success(self.request, success_message)
+        return response
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % cleaned_data
+
+
 # Person views
 
-class ContactListView(ListView):
+class ContactListView(LoginRequiredMixin, ListView):
     model = Person
     paginate_by = 10
 
     def get_queryset(self):
+        current_user_person_query = Person.objects.filter(created_by=self.request.user)
         search = self.request.GET.get("search")
         if search is None:
             search = ""
-        return (Person.objects.filter(first_name__icontains=search)
-                | Person.objects.filter(last_name__icontains=search))\
+        return (current_user_person_query.filter(first_name__icontains=search)
+                | current_user_person_query.filter(last_name__icontains=search)) \
             .order_by("last_name")
 
     def get_context_data(self, *args, **kwargs):
@@ -31,186 +59,124 @@ class ContactListView(ListView):
         return data
 
 
-class ContactDetailsView(DetailView):
-    model = Person
-
-
-class CreateContactView(SuccessMessageMixin, CreateView):
+class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, CreateWithInlinesView):
     model = Person
     form_class = PersonForm
+    inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
+    inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
     success_url = reverse_lazy('contact-list')
-    success_message = "New contact added - %(first_name)s %(last_name)s"
+    success_message = "Contact %(first_name)s %(last_name)s created"
 
 
-class UpdateContactView(SuccessMessageMixin, UpdateView):
+class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, UpdateWithInlinesView):
     model = Person
     form_class = PersonForm
+    group_form_class = ContactGroupForm
     template_name_suffix = '_update_form'
-    success_url = reverse_lazy('contact-list')
-    success_message = "Contact %(first_name)s %(last_name)s updated"
+    inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
+    inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
+    success_message = "Contact %(first_name)s %(last_name)s updated successfully"
+
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.id,))
 
 
-class DeleteContactView(SuccessMessageMixin, DeleteView):
+class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Person
     success_url = reverse_lazy('contact-list')
     success_message = "Contact %(first_name)s %(last_name)s deleted"
+
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         messages.success(self.request, self.success_message % obj.__dict__)
         return super(DeleteContactView, self).delete(request, *args, **kwargs)
 
-    # TODO find a way to delete foreign keys with, it otherwise find to manage them
-
-
-# Person object mix-in
-
-class PersonObjectMixin(object):
-    model = Person
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['person_id'] = self.kwargs.get("pk")
-        return context
-
-    def get_success_url(self):
-        person_id = self.kwargs.get("pk")
-        return reverse('contact-details', args=(person_id,))
-
 
 # Address views
 
-class CreateAddressView(PersonObjectMixin, CreateView):
-    model = Address
-    fields = '__all__'
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(address=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class UpdateAddressView(PersonObjectMixin, UpdateView):
-    model = Address
-    fields = '__all__'
-    template_name_suffix = '_update_form'
-
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).address
-        return object
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(address=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class DeleteAddressView(PersonObjectMixin, DeleteView):
+class AddressDetailView(LoginRequiredMixin, DetailView):
     model = Address
 
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).address
-        return object
+    def get_queryset(self):
+        get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+
+class DeleteAddressView(LoginRequiredMixin, DeleteView):
+    model = Address
+
+    def get_queryset(self):
+        get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.person_id,))
 
 
 # Phone views
 
-class CreatePhoneView(PersonObjectMixin, CreateView):
-    model = Phone
-    form_class = PhoneForm
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(phone=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class UpdatePhoneView(PersonObjectMixin, UpdateView):
-    model = Phone
-    form_class = PhoneForm
-    template_name_suffix = '_update_form'
-
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).phone
-        return object
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(phone=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class DeletePhoneView(PersonObjectMixin, DeleteView):
+class DeletePhoneView(LoginRequiredMixin, DeleteView):
     model = Phone
 
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).phone
-        return object
+    def get_queryset(self):
+        get_object_or_404(Phone, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.person_id,))
 
 
 # Email views
 
-class CreateEmailView(PersonObjectMixin, CreateView):
-    model = Email
-    form_class = EmailForm
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(email=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class UpdateEmailView(PersonObjectMixin, UpdateView):
-    model = Email
-    form_class = EmailForm
-    template_name_suffix = '_update_form'
-
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).email
-        return object
-
-    def form_valid(self, form):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        self.object = form.save()
-        Person.objects.filter(pk=id).update(email=self.object.id)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class DeleteEmailView(PersonObjectMixin, DeleteView):
+class DeleteEmailView(LoginRequiredMixin, DeleteView):
     model = Email
 
-    def get_object(self):
-        id = self.kwargs.get(self.pk_url_kwarg)
-        object = get_object_or_404(Person, id=id).email
-        return object
+    def get_queryset(self):
+        get_object_or_404(Email, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.person_id,))
 
 
-class AddContactToGroup(PersonObjectMixin, UpdateView):
+class AddContactToGroup(LoginRequiredMixin, UpdateView):
     model = Person
     form_class = ContactGroupForm
     template_name = 'contacts_app/add_contact_to_group.html'
 
+    def get_form(self, *args, **kwargs):
+        form = super().get_form(*args, **kwargs)
+        form.fields['groups'].queryset = Group.objects.filter(created_by=self.request.user.pk)
+        return form
+
+    def get_queryset(self):
+        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
+
+    def get_success_url(self):
+        return reverse_lazy('contact-details', args=(self.object.id,))
+
 
 # Group views
 
-class GroupListView(ListView):
+class GroupListView(LoginRequiredMixin, ListView):
     model = Group
+    paginate_by = 10
 
     def get_queryset(self):
+        current_user_group_query = Group.objects.filter(created_by=self.request.user)
         search = self.request.GET.get("search")
         if search is None:
             search = ""
-        return Group.objects.filter(name__icontains=search).order_by("name")
+        return current_user_group_query.filter(name__icontains=search).order_by("name")
 
     def get_context_data(self, *args, **kwargs):
         data = super().get_context_data(*args, **kwargs)
@@ -218,29 +184,41 @@ class GroupListView(ListView):
         return data
 
 
-class GroupDetailView(DetailView):
+class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
 
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
-class CreateGroupView(SuccessMessageMixin, CreateView):
+
+class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Group
-    fields = '__all__'
+    fields = ['name', 'description', ]
     success_url = reverse_lazy('group-list')
     success_message = "New group added - %(name)s"
 
 
-class UpdateGroupView(SuccessMessageMixin, UpdateView):
+class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Group
-    fields = '__all__'
+    fields = ['name', 'description', ]
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s updated"
 
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
-class DeleteGroupView(SuccessMessageMixin, DeleteView):
+
+class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s deleted"
+
+    def get_queryset(self):
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
