@@ -42,7 +42,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=32)
     last_name = models.CharField(max_length=32)
     description = models.TextField(null=True, blank=True)
-    groups = models.ManyToManyField(Group)
+    groups = models.ManyToManyField(Group, blank=True)
     created_by = CurrentUserField(related_name='person_created_by')
 
     @property

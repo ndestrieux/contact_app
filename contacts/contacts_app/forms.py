@@ -55,6 +55,8 @@ class PhoneForm(forms.ModelForm):
             'phone': forms.TextInput()
         }
 
+        # TODO phone number validation, country code to be added
+
 
 class EmailForm(forms.ModelForm):
     address = forms.EmailField(error_messages={'invalid': 'Enter a valid email address'},)
@@ -84,6 +86,7 @@ class ContactGroupForm(forms.ModelForm):
         labels = {
             'groups': ''
         }
+
 
 
 class AddressFormSet(InlineFormSetFactory):
