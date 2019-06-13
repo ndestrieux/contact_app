@@ -73,7 +73,7 @@
     {{ phone_forms.management_form }}
     {{ phone_forms.non_form_errors }}
     {% for phone_form in phone_forms %}
-        <div id="phone-{{ phone_form.id.value }}-modal" class="modal fade" role="dialog">
+        <div id="phone-{% if phone_form.id %}{{ phone_form.id.value }}{% else %}None{% endif %}-modal" class="modal fade" role="dialog">
             <div class="modal-dialog">
 
                 <!-- Phone modal content-->
@@ -87,7 +87,7 @@
                         {{ phone_form|crispy }}
                         <script type="text/javascript">
                             {% if phone_form.errors %}
-                                $("#phone-{% if phone_form.id.value %}{{ phone_form.id.value }}{% else %}None{% endif %}-modal").modal("show");
+                                $("#phone-{% if phone_form.id %}{{ phone_form.id.value }}{% else %}None{% endif %}-modal").modal("show");
                             {% endif %}
                         </script>
                     </div>
@@ -105,7 +105,7 @@
     {{ email_forms.management_form }}
     {{ email_forms.non_form_errors }}
     {% for email_form in email_forms %}
-        <div id="email-{% if email_form.id.value %}{{ email_form.id.value }}{% else %}None{% endif %}-modal" class="modal fade" role="dialog">
+        <div id="email-{% if email_form.id %}{{ email_form.id.value }}{% else %}None{% endif %}-modal" class="modal fade" role="dialog">
             <div class="modal-dialog">
 
                 <!-- Email modal content-->
@@ -119,7 +119,7 @@
                         {{ email_form|crispy }}
                         <script type="text/javascript">
                             {% if email_form.errors %}
-                                $("#email-{% if email_form.id.value %}{{ email_form.id.value }}{% else %}None{% endif %}-modal").modal("show");
+                                $("#email-{% if email_form.id %}{{ email_form.id.value }}{% else %}None{% endif %}-modal").modal("show");
                             {% endif %}
                         </script>
                     </div>

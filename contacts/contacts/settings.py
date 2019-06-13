@@ -27,7 +27,7 @@ SECRET_KEY = '6v5v!o0*s^pi$wc9c#&v_wvnuagw#ovo@6u0xy9*u39dakcy@='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.10.33']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'extra_views',
     'octicons',
     'django_countries',
+    'phonenumber_field',
 
     'contacts_app',
 ]
