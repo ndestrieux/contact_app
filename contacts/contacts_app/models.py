@@ -4,7 +4,7 @@ from django_countries.fields import CountryField
 from django_currentuser.db.models import CurrentUserField
 from folium import Map, Marker, Icon
 from geopy import Nominatim
-
+from phonenumber_field.modelfields import PhoneNumberField
 
 ADDRESS_TYPE = (
     (1, "Primary"),
@@ -12,17 +12,15 @@ ADDRESS_TYPE = (
 )
 
 PHONE_TYPE = (
-    (1, "unknown"),
-    (2, "work - stationary"),
-    (3, "home - stationary"),
-    (4, "work - mobile"),
-    (5, "home - mobile")
+    (1, "work - stationary"),
+    (2, "home - stationary"),
+    (3, "work - mobile"),
+    (4, "home - mobile")
 )
 
 EMAIL_TYPE = (
-    (1, "unknown"),
-    (2, "work"),
-    (3, "home")
+    (1, "work"),
+    (2, "home")
 )
 
 
@@ -97,8 +95,8 @@ class Address(models.Model):
 
 
 class Phone(models.Model):
-    number = models.IntegerField()
-    type = models.IntegerField(choices=PHONE_TYPE, default=1, blank=True, null=True)
+    number = PhoneNumberField()
+    type = models.IntegerField(choices=PHONE_TYPE, default=None, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     created_by = CurrentUserField(related_name='phone_created_by')
 
@@ -107,8 +105,8 @@ class Phone(models.Model):
 
 
 class Email(models.Model):
-    address = models.CharField(max_length=128)
-    type = models.IntegerField(choices=EMAIL_TYPE, default=1, blank=True, null=True)
+    address = models.EmailField(max_length=128)
+    type = models.IntegerField(choices=EMAIL_TYPE, default=None, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     created_by = CurrentUserField(related_name='email_created_by')
 

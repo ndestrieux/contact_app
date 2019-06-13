@@ -3,12 +3,12 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import RegexValidator
 from django import forms
 from extra_views import InlineFormSetFactory
+from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
 from contacts_app.models import Person, Phone, Email, Address, PHONE_TYPE, EMAIL_TYPE
 
 
 class UserRegistrationForm(UserCreationForm):
-
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2']
@@ -24,7 +24,6 @@ class PersonForm(forms.ModelForm):
 
 
 class AddressForm(forms.ModelForm):
-
     class Meta:
         model = Address
         exclude = ['person', 'created_by', ]
@@ -34,12 +33,6 @@ class AddressForm(forms.ModelForm):
 
 
 class PhoneForm(forms.ModelForm):
-    number = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    type = forms.ChoiceField(
-        widget=forms.RadioSelect(),
-        choices=PHONE_TYPE[0:],
-        required=False
-    )
 
     def clean_type(self):
         phone_type = self.cleaned_data.get('type')
@@ -51,20 +44,9 @@ class PhoneForm(forms.ModelForm):
     class Meta:
         model = Phone
         exclude = ['person', 'created_by', ]
-        widgets = {
-            'phone': forms.TextInput()
-        }
-
-        # TODO phone number validation, country code to be added
 
 
 class EmailForm(forms.ModelForm):
-    address = forms.EmailField(error_messages={'invalid': 'Enter a valid email address'},)
-    type = forms.ChoiceField(
-        widget=forms.RadioSelect(),
-        choices=EMAIL_TYPE[0:],
-        required=False
-    )
 
     def clean_type(self):
         email_type = self.cleaned_data.get('type')
@@ -79,14 +61,12 @@ class EmailForm(forms.ModelForm):
 
 
 class ContactGroupForm(forms.ModelForm):
-
     class Meta:
         model = Person
         fields = ['groups']
         labels = {
             'groups': ''
         }
-
 
 
 class AddressFormSet(InlineFormSetFactory):
