@@ -1,0 +1,116 @@
+{% extends "contacts_app/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load octicons %}
+
+{% block content %}
+
+    <div class="container">
+        <h2>{{ person.name }} - contact details
+            <a href="javascript:void(0)" class="btn btn-default btn-sm" data-toggle="modal"
+               data-target="#person-modal">{% octicon 'pencil' %}</a>
+        </h2>
+        <small>{{ person.description }}</small>
+        <hr>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header"><b>Primary address</b></div>
+                    <div class="card-body">
+                        {% if person.get_primary_address.exists %}
+                            {{ person.get_primary_address.get }}
+                            <a href="javascript:void(0)" title="edit" data-toggle="modal"
+                               data-target="#address-{{ person.get_primary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
+                            <a href="{% url 'delete-address' person.get_primary_address.get.id %}"
+                               title="delete">{% octicon 'trashcan' %}</a>
+                            <a href="{% url 'address-details' person.get_primary_address.get.id %}"
+                               title="see map">{% octicon 'globe' %}</a>
+                        {% else %}
+                            <a href="javascript:void(0)" data-toggle="modal"
+                               data-target="#address-None-modal">{% octicon 'plus' %} add primary address</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header"><b>Secondary address</b></div>
+                    <div class="card-body">
+                        {% if person.get_secondary_address.exists %}
+                            {{ person.get_secondary_address.get }}
+                            <a href="javascript:void(0)" title="edit" data-toggle="modal"
+                               data-target="#address-{{ person.get_secondary_address.get.id }}-modal">{% octicon 'pencil' %}</a>
+                            <a href="{% url 'delete-address' person.get_secondary_address.get.id %}"
+                               title="delete">{% octicon 'trashcan' %}</a>
+                            <a href="{% url 'address-details' person.get_secondary_address.get.id %}"
+                               title="see map">{% octicon 'globe' %}</a>
+                        {% else %}
+                            <a href="javascript:void(0)" data-toggle="modal"
+                               data-target="#address-None-modal">{% octicon 'plus' %} add secondary address</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header"><b>Phone number</b></div>
+                    <div class="card-body">
+                        <dl>
+                            {% for phone in person.phone_set.all %}
+                                <dd>
+                                    {{ phone }}
+                                    <a href="javascript:void(0)" title="edit" data-toggle="modal"
+                                       data-target="#phone-{{ phone.id }}-modal">{% octicon 'pencil' %}</a>
+                                    <a href="{% url 'delete-phone' phone.id %}"
+                                       title="delete">{% octicon 'trashcan' %}</a>
+                                </dd>
+                            {% endfor %}
+                        </dl>
+                        <a href="javascript:void(0)" data-toggle="modal"
+                           data-target="#phone-None-modal">{% octicon 'plus' %} add phone number</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header"><b>Email address</b></div>
+                    <div class="card-body">
+                        <dl>
+                            {% for email in person.email_set.all %}
+                                <dd>
+                                    {{ email }}
+                                    <a href="javascript:void(0)" title="edit" data-toggle="modal"
+                                       data-target="#email-{{ email.id }}-modal">{% octicon 'pencil' %}</a>
+                                    <a href="{% url 'delete-email' email.id %}"
+                                       title="delete">{% octicon 'trashcan' %}</a>
+                                </dd>
+                            {% endfor %}
+                        </dl>
+                        <a href="javascript:void(0)" data-toggle="modal"
+                           data-target="#email-None-modal">{% octicon 'plus' %} add mail address</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-8">
+            <div class="card">
+                <div class="card-header"><b>Groups</b></div>
+                <div class="card-body">
+                    <dl>
+                        {% for group_object in person.groups.all %}
+                            <dd>{{ group_object }}</dd>
+                        {% endfor %}
+                    </dl>
+                    <a href="{% url 'add-to-group' person.id %}">{% octicon 'plus' %} add/remove groups</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'contacts_app/modals.html' %}
+
+{% endblock %}
