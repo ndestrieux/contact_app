@@ -133,10 +133,7 @@ dmypy.json
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
-<<<<<<< HEAD
 .idea/
-=======
->>>>>>> ffe9fa53330e9e3ca35e19945219c806e2c961fc
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml

@@ -5,11 +5,7 @@ chardet==3.0.4
 Click==7.0
 decorator==4.4.0
 dj-database-url==0.5.0
-<<<<<<< HEAD
 Django==2.2.8
-=======
-Django==2.2.2
->>>>>>> ffe9fa53330e9e3ca35e19945219c806e2c961fc
 django-countries==5.3.3
 django-crispy-forms==1.7.2
 django-currentuser==0.4.1
@@ -31,10 +27,7 @@ Jinja2==2.10.1
 MarkupSafe==1.1.1
 numpy==1.16.4
 phonenumbers==8.10.13
-<<<<<<< HEAD
 pkg-resources==0.0.0
-=======
->>>>>>> ffe9fa53330e9e3ca35e19945219c806e2c961fc
 psycopg2==2.8.3
 psycopg2-binary==2.8.2
 pyparsing==2.4.0
