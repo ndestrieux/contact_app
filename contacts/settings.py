@@ -28,7 +28,7 @@ SECRET_KEY = '6v5v!o0*s^pi$wc9c#&v_wvnuagw#ovo@6u0xy9*u39dakcy@='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,9 +133,19 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = "/static/"
+
+STATIC_DIR = (
+    os.path.join(BASE_DIR, 'contacts_app/static'),
+    os.path.join(BASE_DIR, 'staticfiles')
+)
+
+# https://warehouse.python.org/project/whitenoise/
+
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_URL = reverse_lazy('login')
 
@@ -142,7 +153,36 @@ LOGIN_REDIRECT_URL = reverse_lazy('contact-list')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-INTERNAL_IPS =['127.0.0.1']
+INTERNAL_IPS = ['127.0.0.1']
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+     'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
