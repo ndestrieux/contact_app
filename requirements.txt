@@ -12,7 +12,7 @@ Django==4.0.2
 django-countries==7.2.1
 django-crispy-forms==1.14.0
 django-currentuser==0.5.3
-django-debug-toolbar\q==3.2.4
+django-debug-toolbar==3.2.4
 django-extensions==3.1.5
 django-extra-views==0.14.0
 django-heroku==0.3.1
