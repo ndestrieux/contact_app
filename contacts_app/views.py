@@ -88,7 +88,7 @@ class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFor
 class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Person
     success_url = reverse_lazy('contact-list')
-    success_message = "Contact deleted"
+    success_message = "Contact %(first_name)s %(last_name)s deleted"
 
     def get_queryset(self):
         get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
@@ -214,7 +214,7 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group-list')
-    success_message = "Group deleted"
+    success_message = "Group %(name)s deleted"
 
     def get_queryset(self):
         get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
