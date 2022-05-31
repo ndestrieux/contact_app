@@ -7,9 +7,10 @@ Based on Coders Lab - W02 - Warsztaty Django samodzielne
 2. [*Clone*](https://help.github.com/articles/cloning-a-repository/) the freshly forked repository on your computer.
 3. From postgreSQL interface, run the command `CREATE DATABASE contacts`, the database that the app will interact with will be created.
 4. From the repository you just cloned, cd to [git_repository]/contacts and run command `python3 manage.py makemigrations` then `python3 manage.py migrate`.
-5. (Optional) You have the possibility to populate your contact database for testing purposes by running the command `python manage.py populatecontacts`
-6. You are ready now to run the app, run the command `python3 manage.py runserver`, the link to reach the app will be showing below.
+5. You are ready now to run the app, run the command `python3 manage.py runserver`, the link to reach the app will be showing below.
 
+Alternatively, the app is deployed on Heroku server :
+https://my-contact-box.herokuapp.com/
 
 ## App content
 
