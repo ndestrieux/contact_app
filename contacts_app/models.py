@@ -56,7 +56,7 @@ class Person(models.Model):
         return self.name
 
     class Meta:
-        unique_together = ['first_name', 'last_name', ]
+        unique_together = ['first_name', 'last_name', 'created_by', ]
 
 
 class Address(models.Model):
