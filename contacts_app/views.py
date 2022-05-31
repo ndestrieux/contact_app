@@ -4,6 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.views import PasswordChangeView
 from extra_views import CreateWithInlinesView, NamedFormsetsMixin, UpdateWithInlinesView
 
 from contacts_app.forms import PersonForm, ContactGroupForm, UserRegistrationForm, PhoneFormSet, \
@@ -20,6 +21,21 @@ class UserRegistration(SuccessMessageMixin, CreateView):
     template_name = 'users/registration.html'
     success_message = "User %(username)s has been registered"
     success_url = reverse_lazy('login')
+
+
+class PwChange(SuccessMessageMixin, PasswordChangeView):
+    template_name = "users/password_change.html"
+    success_url = reverse_lazy("contact-list")
+    success_message = "Password updated"
+
+
+# class PasswordChange(SuccessMessageMixin, UpdateView):
+#     Model = User
+#     form_class = PwChangeForm
+#     template_name = 'password_change'
+#     success_message = "Password updated"
+#     success_url = reverse_lazy('contact-list')
+#     queryset = User.get_username(username)
 
 
 # Formset Success Message Mixin

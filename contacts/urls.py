@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.contrib.auth.views import LogoutView, LoginView
 from django.urls import path
 
-from contacts.settings import DEBUG, STATIC_ROOT
+from contacts.settings import DEBUG
 from contacts_app.views import (
     UserRegistration,
+    PwChange,
     ContactListView, CreateContactView, DeleteContactView, DeleteAddressView,
     DeletePhoneView,
     DeleteEmailView,
@@ -34,6 +35,7 @@ urlpatterns = [
     path('register/', UserRegistration.as_view(), name="register"),
     path('login/', LoginView.as_view(template_name="users/login.html"), name='login'),
     path('logout/', LogoutView.as_view(template_name="users/logged_out.html"), name='logout'),
+    path('change_password/', PwChange.as_view(), name='change-password'),
 
     path('', ContactListView.as_view(), name="contact-list"),
     path('show/<int:pk>', UpdateContactView.as_view(), name="contact-details"),

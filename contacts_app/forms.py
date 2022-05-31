@@ -1,11 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django import forms
 from extra_views import InlineFormSetFactory
-from phonenumber_field.widgets import PhoneNumberPrefixWidget
 
-from contacts_app.models import Person, Phone, Email, Address, PHONE_TYPE, EMAIL_TYPE
+from contacts_app.models import Person, Phone, Email, Address
 
 
 class UserRegistrationForm(UserCreationForm):
