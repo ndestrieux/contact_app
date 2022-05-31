@@ -11,6 +11,7 @@
                 {% else %}
                     <div id="empty">There's not map to show</div>
                 {% endif %}
+                <a href="{% url 'contact-details' address.person.id %}">Back</a>
             </div>
         </div>
     </div>
