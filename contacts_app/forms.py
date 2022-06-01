@@ -62,9 +62,12 @@ class EmailForm(forms.ModelForm):
 class ContactGroupForm(forms.ModelForm):
     class Meta:
         model = Person
-        fields = ['groups']
+        fields = ['groups', ]
         labels = {
             'groups': ''
+        }
+        widgets = {
+            'groups': forms.CheckboxSelectMultiple()
         }
 
 

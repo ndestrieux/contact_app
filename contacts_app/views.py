@@ -15,7 +15,6 @@ from contacts_app.models import Person, Address, Phone, Email, Group
 # Create your views here.
 
 # User registration view
-
 class UserRegistration(SuccessMessageMixin, CreateView):
     form_class = UserRegistrationForm
     template_name = 'users/registration.html'
@@ -23,19 +22,11 @@ class UserRegistration(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('login')
 
 
+# User change password view
 class PwChange(SuccessMessageMixin, PasswordChangeView):
     template_name = "users/password_change.html"
     success_url = reverse_lazy("contact-list")
     success_message = "Password updated"
-
-
-# class PasswordChange(SuccessMessageMixin, UpdateView):
-#     Model = User
-#     form_class = PwChangeForm
-#     template_name = 'password_change'
-#     success_message = "Password updated"
-#     success_url = reverse_lazy('contact-list')
-#     queryset = User.get_username(username)
 
 
 # Formset Success Message Mixin
@@ -202,10 +193,11 @@ class GroupListView(LoginRequiredMixin, ListView):
 
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
+    form_class = ContactGroupForm
 
-    def get_queryset(self):
-        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
-        return super().get_queryset()
+#    def get_queryset(self):
+#        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+#        return super().get_queryset()
 
 
 class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):

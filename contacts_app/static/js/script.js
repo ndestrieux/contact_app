@@ -1,18 +1,21 @@
 $(document).ready(function () {
 
+    // hide info bar when clicking on it
     $(".alert").click(function () {
         $(this).hide();
     });
 
+    // Select/Deselect option when adding person to groups
     $("#selectAll").click(function (event) {
         event.preventDefault();
-        $("#id_groups > option").attr("selected", true);
+        $(".form-check input").prop("checked", true);
     });
 
     $("#deselectAll").click(function () {
-        $("#id_groups > option").removeAttr('selected');
+        $(".form-check input").prop("checked", false);
     });
 
+    // disable remove form button when only one form remain
     $('.remove_form').each(function () {
         const actualNbOfForms = parseInt($(this).closest('div').next('.form_set')
             .children('input:first').val());
@@ -21,6 +24,7 @@ $(document).ready(function () {
         }
     });
 
+    // add form functionality
     $('form').on("click", ".add_form", function (event) {
         const formSetDiv = $(this).closest('div').next('.form_set');
         const totalForms = formSetDiv.children('input:first');
@@ -33,6 +37,7 @@ $(document).ready(function () {
         }
     });
 
+    // remove form functionality
     $('form').on("click", ".remove_form", function (event) {
         const formSetDiv = $(this).closest('div').next('.form_set');
         const totalForms = formSetDiv.children('input:first');
