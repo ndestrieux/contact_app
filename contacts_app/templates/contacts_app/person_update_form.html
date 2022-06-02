@@ -105,7 +105,8 @@
                             <dd>{{ group_object }}</dd>
                         {% endfor %}
                     </dl>
-                    <a href="{% url 'add-to-group' person.id %}">{% octicon 'plus' %} add/remove groups</a>
+                    <a href="javascript:void(0)" data-toggle="modal"
+                           data-target="#group-modal">{% octicon 'plus' %} add/remove groups</a>
                 </div>
             </div>
         </div>

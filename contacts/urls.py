@@ -25,7 +25,6 @@ from contacts_app.views import (
     ContactListView, CreateContactView, DeleteContactView, DeleteAddressView,
     DeletePhoneView,
     DeleteEmailView,
-    AddContactToGroup,
     GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView,
     UpdateContactView, AddressDetailView)
 
@@ -49,13 +48,13 @@ urlpatterns = [
 
     path('delete_email/<int:pk>', DeleteEmailView.as_view(), name="delete-email"),
 
-    path('add_to_group/<int:pk>', AddContactToGroup.as_view(), name='add-to-group'),
-
     path('groups/', GroupListView.as_view(), name="group-list"),
     path('groups/show/<int:pk>', GroupDetailView.as_view(), name="group-detail"),
     path('groups/new', CreateGroupView.as_view(), name="create-group"),
     path('groups/modify/<int:pk>', UpdateGroupView.as_view(), name="update-group"),
     path('groups/delete/<int:pk>', DeleteGroupView.as_view(), name="delete-group"),
+
+    path("select2/", include("django_select2.urls")),
 ]
 
 if DEBUG:

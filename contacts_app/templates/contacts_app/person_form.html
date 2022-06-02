@@ -11,7 +11,9 @@
                 <div class="inline {{ form.prefix }} mb-4">
                     <div class="card">
                         <div class="card-body">
-                            {{ form|crispy }}
+                            {{ form.first_name|as_crispy_field }}
+                            {{ form.last_name|as_crispy_field }}
+                            {{ form.description|as_crispy_field }}
                         </div>
                     </div>
                 </div>

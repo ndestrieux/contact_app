@@ -7,8 +7,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.views import PasswordChangeView
 from extra_views import CreateWithInlinesView, NamedFormsetsMixin, UpdateWithInlinesView
 
-from contacts_app.forms import PersonForm, ContactGroupForm, UserRegistrationForm, PhoneFormSet, \
-    EmailFormSet, AddressFormSet
+from contacts_app.forms import PersonForm, UserRegistrationForm, PhoneFormSet, \
+    EmailFormSet, AddressFormSet, UpdateGroupForm
 from contacts_app.models import Person, Address, Phone, Email, Group
 
 
@@ -69,7 +69,7 @@ class ContactListView(LoginRequiredMixin, ListView):
 class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, CreateWithInlinesView):
     model = Person
     form_class = PersonForm
-    inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
+    inlines = [AddressFormSet, PhoneFormSet, EmailFormSet, ]
     inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
     success_url = reverse_lazy('contact-list')
     success_message = "Contact %(first_name)s %(last_name)s created"
@@ -78,7 +78,6 @@ class CreateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFor
 class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFormsetsMixin, UpdateWithInlinesView):
     model = Person
     form_class = PersonForm
-    group_form_class = ContactGroupForm
     template_name_suffix = '_update_form'
     inlines = [AddressFormSet, PhoneFormSet, EmailFormSet]
     inlines_names = ['address_forms', 'phone_forms', 'email_forms', ]
@@ -154,24 +153,6 @@ class DeleteEmailView(LoginRequiredMixin, DeleteView):
         return reverse_lazy('contact-details', args=(self.object.person_id,))
 
 
-class AddContactToGroup(LoginRequiredMixin, UpdateView):
-    model = Person
-    form_class = ContactGroupForm
-    template_name = 'contacts_app/add_contact_to_group.html'
-
-    def get_form(self, *args, **kwargs):
-        form = super().get_form(*args, **kwargs)
-        form.fields['groups'].queryset = Group.objects.filter(created_by=self.request.user.pk)
-        return form
-
-    def get_queryset(self):
-        get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
-        return super().get_queryset()
-
-    def get_success_url(self):
-        return reverse_lazy('contact-details', args=(self.object.id,))
-
-
 # Group views
 
 class GroupListView(LoginRequiredMixin, ListView):
@@ -193,11 +174,6 @@ class GroupListView(LoginRequiredMixin, ListView):
 
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
-    form_class = ContactGroupForm
-
-#    def get_queryset(self):
-#        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
-#        return super().get_queryset()
 
 
 class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -209,7 +185,7 @@ class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Group
-    fields = ['name', 'description', ]
+    form_class = UpdateGroupForm
     template_name_suffix = '_update_form'
     success_url = reverse_lazy('group-list')
     success_message = "Group %(name)s updated"

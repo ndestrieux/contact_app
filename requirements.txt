@@ -8,7 +8,8 @@ charset-normalizer==2.0.12
 click==8.0.4
 decorator==5.1.1
 dj-database-url==0.5.0
-Django==3.2.12
+Django==3.2
+django-appconf==1.0.5
 django-countries==7.2.1
 django-crispy-forms==1.14.0
 django-currentuser==0.5.3
@@ -18,6 +19,7 @@ django-extra-views==0.14.0
 django-heroku==0.3.1
 django-octicons==1.0.2
 django-phonenumber-field==6.1.0
+django-select2==7.10.0
 django-widget-tweaks==1.4.12
 Faker==13.0.0
 folium==0.12.1.post1
@@ -28,7 +30,7 @@ gunicorn==20.1.0
 idna==3.3
 Jinja2==3.0.3
 MarkupSafe==2.1.0
-numpy==1.21.5
+numpy==1.22.2
 phonenumbers==8.12.43
 psycopg2==2.9.3
 psycopg2-binary==2.9.3

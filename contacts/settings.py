@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'octicons',
     'django_countries',
     'phonenumber_field',
+    'django_select2',
 
     'contacts_app',
 ]

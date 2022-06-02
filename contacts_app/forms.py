@@ -3,8 +3,10 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django import forms
 from extra_views import InlineFormSetFactory
+from django_select2 import forms as s2forms
 
-from contacts_app.models import Person, Phone, Email, Address
+
+from contacts_app.models import Person, Phone, Email, Address, Group
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -13,13 +15,21 @@ class UserRegistrationForm(UserCreationForm):
         fields = ['username', 'password1', 'password2']
 
 
+class GroupWidget(s2forms.ModelSelect2MultipleWidget):
+    model = Group
+    search_fields = ['name__icontains']
+
+
 class PersonForm(forms.ModelForm):
     first_name = forms.CharField(validators=[RegexValidator('^((\w)+([-\'])*(\w)+)$')])
     last_name = forms.CharField(validators=[RegexValidator('^((\w)+([-\'])*(\w)+)$')])
 
     class Meta:
         model = Person
-        exclude = ['groups', 'created_by', ]
+        exclude = ['created_by', ]
+        widgets = {
+            'groups': GroupWidget(attrs={'data-width': '100%'})
+        }
 
 
 class AddressForm(forms.ModelForm):
@@ -59,18 +69,6 @@ class EmailForm(forms.ModelForm):
         exclude = ['person', 'created_by', ]
 
 
-class ContactGroupForm(forms.ModelForm):
-    class Meta:
-        model = Person
-        fields = ['groups', ]
-        labels = {
-            'groups': ''
-        }
-        widgets = {
-            'groups': forms.CheckboxSelectMultiple()
-        }
-
-
 class AddressFormSet(InlineFormSetFactory):
     model = Address
     form_class = AddressForm
@@ -97,3 +95,20 @@ class EmailFormSet(InlineFormSetFactory):
     model = Email
     form_class = EmailForm
     factory_kwargs = {'extra': 1, 'can_delete': False}
+
+
+# class MemberWidget(s2forms.ModelSelect2MultipleWidget):
+#     model = Person
+#     search_fields = ['first_name__icontains',
+#                      'last_name__icontains'
+#                      ]
+
+
+class UpdateGroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'description', ]
+
+    # members = forms.CharField(
+    #     widget=MemberWidget
+    # )
