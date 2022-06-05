@@ -16,6 +16,7 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class GroupWidget(s2forms.ModelSelect2MultipleWidget):
+    # select2 widget to add group to person
     model = Group
     search_fields = ['name__icontains']
 
@@ -98,6 +99,7 @@ class EmailFormSet(InlineFormSetFactory):
 
 
 class MemberWidget(s2forms.ModelSelect2MultipleWidget):
+    # select2 widget to add person to group
     model = Person
     search_fields = ['first_name__icontains',
                      'last_name__icontains']
@@ -112,6 +114,7 @@ class UpdateGroupForm(forms.ModelForm):
         super(UpdateGroupForm, self).__init__(*args, **kwargs)
         self.fields['members'].queryset = Person.objects.filter(
             created_by=self.request.user)
+        self.fields['members'].required = False
 
     class Meta:
         model = Group
