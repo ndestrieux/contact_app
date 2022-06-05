@@ -52,7 +52,9 @@ class ContactListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         current_user_person_query = Person.objects.filter(created_by=self.request.user)
+        # Search engine
         search = self.request.GET.get("search")
         if search is None:
             search = ""
@@ -84,6 +86,7 @@ class UpdateContactView(LoginRequiredMixin, FormSetSuccessMessageMixin, NamedFor
     success_message = "Contact %(first_name)s %(last_name)s updated successfully"
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -97,6 +100,7 @@ class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     success_message = "Contact %(first_name)s %(last_name)s deleted"
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Person, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -112,6 +116,7 @@ class AddressDetailView(LoginRequiredMixin, DetailView):
     model = Address
 
     def get_queryset(self):
+        """Avoid current logged user to access data from other users"""
         get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -120,6 +125,7 @@ class DeleteAddressView(LoginRequiredMixin, DeleteView):
     model = Address
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Address, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -133,6 +139,7 @@ class DeletePhoneView(LoginRequiredMixin, DeleteView):
     model = Phone
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Phone, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -146,6 +153,7 @@ class DeleteEmailView(LoginRequiredMixin, DeleteView):
     model = Email
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Email, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 
@@ -160,7 +168,9 @@ class GroupListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         current_user_group_query = Group.objects.filter(created_by=self.request.user)
+        # Search engine for groups
         search = self.request.GET.get("search")
         if search is None:
             search = ""
@@ -174,6 +184,11 @@ class GroupListView(LoginRequiredMixin, ListView):
 
 class GroupDetailView(LoginRequiredMixin, DetailView):
     model = Group
+
+    def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
+        get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
+        return super().get_queryset()
 
 
 class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -191,8 +206,33 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Group %(name)s updated"
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
+
+    def get_form_kwargs(self):
+        """ Passes the request object to the form class.
+         This is necessary to only display members that belong to a given user"""
+        kwargs = super(UpdateGroupView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+        # Passes the initial values from the manytomany relationship with table Person
+        initial = super().get_initial()
+        member_list = Person.objects.filter(groups=self.object.id, created_by=self.request.user)\
+            .values_list('pk', flat=True)
+        initial['members'] = list(member_list)
+        return initial
+
+    def form_valid(self, form):
+        # save group for selected users
+        current_group = Group.objects.get(id=self.object.id)
+        current_group.person_set.clear()
+        for m_id in list(form.cleaned_data['members'].values_list('pk', flat=True)):
+            m = Person.objects.get(id=m_id)
+            m.groups.add(self.object.id)
+        return super(UpdateGroupView, self).form_valid(form)
 
 
 class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -201,6 +241,7 @@ class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     success_message = "Group %(name)s deleted"
 
     def get_queryset(self):
+        # Avoid current logged user from accessing data from other users
         get_object_or_404(Group, id=self.kwargs.get('pk'), created_by=self.request.user)
         return super().get_queryset()
 

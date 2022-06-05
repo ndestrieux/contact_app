@@ -97,18 +97,27 @@ class EmailFormSet(InlineFormSetFactory):
     factory_kwargs = {'extra': 1, 'can_delete': False}
 
 
-# class MemberWidget(s2forms.ModelSelect2MultipleWidget):
-#     model = Person
-#     search_fields = ['first_name__icontains',
-#                      'last_name__icontains'
-#                      ]
+class MemberWidget(s2forms.ModelSelect2MultipleWidget):
+    model = Person
+    search_fields = ['first_name__icontains',
+                     'last_name__icontains']
 
 
 class UpdateGroupForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        """ Grants access to the request object so that only members of the current user
+        are given as options"""
+        self.request = kwargs.pop('request')
+        super(UpdateGroupForm, self).__init__(*args, **kwargs)
+        self.fields['members'].queryset = Person.objects.filter(
+            created_by=self.request.user)
+
     class Meta:
         model = Group
-        fields = ['name', 'description', ]
+        fields = ['name', 'members', 'description', ]
 
-    # members = forms.CharField(
-    #     widget=MemberWidget
-    # )
+    members = forms.ModelMultipleChoiceField(
+        queryset=None,
+        widget=MemberWidget
+    )

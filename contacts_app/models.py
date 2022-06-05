@@ -57,6 +57,7 @@ class Person(models.Model):
 
     class Meta:
         unique_together = ['first_name', 'last_name', 'created_by', ]
+        ordering = ['first_name', ]
 
 
 class Address(models.Model):
