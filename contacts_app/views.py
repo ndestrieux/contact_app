@@ -222,14 +222,14 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         initial = super().get_initial()
         member_list = Person.objects.filter(groups=self.object.id, created_by=self.request.user)\
             .values_list('pk', flat=True)
-        initial['members'] = list(member_list)
+        initial['members'] = member_list
         return initial
 
     def form_valid(self, form):
         # save group for selected users
         current_group = Group.objects.get(id=self.object.id)
         current_group.person_set.clear()
-        for m_id in list(form.cleaned_data['members'].values_list('pk', flat=True)):
+        for m_id in form.cleaned_data['members'].values_list('pk', flat=True):
             m = Person.objects.get(id=m_id)
             m.groups.add(self.object.id)
         return super(UpdateGroupView, self).form_valid(form)
