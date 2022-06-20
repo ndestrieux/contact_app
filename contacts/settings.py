@@ -12,18 +12,22 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import django_heroku
 import os
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.urls import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6v5v!o0*s^pi$wc9c#&v_wvnuagw#ovo@6u0xy9*u39dakcy@='
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -91,10 +95,10 @@ WSGI_APPLICATION = 'contacts.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'contacts',
+        'NAME': env('DATABASE_NAME'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'USER': 'postgres',
-        'PASSWORD': 'coderslab',
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
         'HOST': '127.0.0.1'
     }
 }
