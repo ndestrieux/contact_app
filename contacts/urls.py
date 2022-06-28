@@ -22,38 +22,44 @@ from contacts.settings import DEBUG
 from contacts_app.views import (
     UserRegistration,
     PwChange,
-    ContactListView, CreateContactView, DeleteContactView, DeleteAddressView,
+    ContactListView,
+    CreateContactView,
+    DeleteContactView,
+    DeleteAddressView,
     DeletePhoneView,
     DeleteEmailView,
-    GroupListView, GroupDetailView, CreateGroupView, UpdateGroupView, DeleteGroupView,
-    UpdateContactView, AddressDetailView)
+    GroupListView,
+    GroupDetailView,
+    CreateGroupView,
+    UpdateGroupView,
+    DeleteGroupView,
+    UpdateContactView,
+    AddressDetailView,
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    path('register/', UserRegistration.as_view(), name="register"),
-    path('login/', LoginView.as_view(template_name="users/login.html"), name='login'),
-    path('logout/', LogoutView.as_view(template_name="users/logged_out.html"), name='logout'),
-    path('change_password/', PwChange.as_view(), name='change-password'),
-
-    path('', ContactListView.as_view(), name="contact-list"),
-    path('show/<int:pk>', UpdateContactView.as_view(), name="contact-details"),
-    path('new/', CreateContactView.as_view(), name="create-contact"),
-    path('delete/<int:pk>', DeleteContactView.as_view(), name="delete-contact"),
-
-    path('address_map/<int:pk>', AddressDetailView.as_view(), name="address-details"),
-    path('delete_address/<int:pk>', DeleteAddressView.as_view(), name="delete-address"),
-
-    path('delete_phone/<int:pk>', DeletePhoneView.as_view(), name="delete-phone"),
-
-    path('delete_email/<int:pk>', DeleteEmailView.as_view(), name="delete-email"),
-
-    path('groups/', GroupListView.as_view(), name="group-list"),
-    path('groups/show/<int:pk>', GroupDetailView.as_view(), name="group-detail"),
-    path('groups/new', CreateGroupView.as_view(), name="create-group"),
-    path('groups/modify/<int:pk>', UpdateGroupView.as_view(), name="update-group"),
-    path('groups/delete/<int:pk>', DeleteGroupView.as_view(), name="delete-group"),
-
+    path("admin/", admin.site.urls),
+    path("register/", UserRegistration.as_view(), name="register"),
+    path("login/", LoginView.as_view(template_name="users/login.html"), name="login"),
+    path(
+        "logout/",
+        LogoutView.as_view(template_name="users/logged_out.html"),
+        name="logout",
+    ),
+    path("change_password/", PwChange.as_view(), name="change-password"),
+    path("", ContactListView.as_view(), name="contact-list"),
+    path("show/<int:pk>", UpdateContactView.as_view(), name="contact-details"),
+    path("new/", CreateContactView.as_view(), name="create-contact"),
+    path("delete/<int:pk>", DeleteContactView.as_view(), name="delete-contact"),
+    path("address_map/<int:pk>", AddressDetailView.as_view(), name="address-details"),
+    path("delete_address/<int:pk>", DeleteAddressView.as_view(), name="delete-address"),
+    path("delete_phone/<int:pk>", DeletePhoneView.as_view(), name="delete-phone"),
+    path("delete_email/<int:pk>", DeleteEmailView.as_view(), name="delete-email"),
+    path("groups/", GroupListView.as_view(), name="group-list"),
+    path("groups/show/<int:pk>", GroupDetailView.as_view(), name="group-detail"),
+    path("groups/new", CreateGroupView.as_view(), name="create-group"),
+    path("groups/modify/<int:pk>", UpdateGroupView.as_view(), name="update-group"),
+    path("groups/delete/<int:pk>", DeleteGroupView.as_view(), name="delete-group"),
     path("select2/", include("django_select2.urls")),
 ]
 
@@ -61,9 +67,7 @@ if DEBUG:
     import debug_toolbar
 
     urlpatterns = [
-                      path('__debug__/', include(debug_toolbar.urls)),
-
-                      # For django versions before 2.0:
-                      # url(r'^__debug__/', include(debug_toolbar.urls)),
-
-                  ] + urlpatterns
+        path("__debug__/", include(debug_toolbar.urls)),
+        # For django versions before 2.0:
+        # url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
