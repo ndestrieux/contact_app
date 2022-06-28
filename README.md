@@ -1,5 +1,4 @@
 # CONTACT APP
-Based on Coders Lab - W02 - Warsztaty Django samodzielne
 
 ## How to start
 
