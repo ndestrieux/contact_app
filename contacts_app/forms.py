@@ -48,8 +48,7 @@ class PhoneForm(forms.ModelForm):
         phone_type = self.cleaned_data.get("type")
         if phone_type is None:
             return self.fields["type"].initial
-        else:
-            return phone_type
+        return phone_type
 
     class Meta:
         model = Phone
@@ -64,8 +63,7 @@ class EmailForm(forms.ModelForm):
         email_type = self.cleaned_data.get("type")
         if email_type is None:
             return self.fields["type"].initial
-        else:
-            return email_type
+        return email_type
 
     class Meta:
         model = Email
@@ -114,7 +112,7 @@ class UpdateGroupForm(forms.ModelForm):
         """Grants access to the request object so that only members of the current user
         are given as options"""
         self.request = kwargs.pop("request")
-        super(UpdateGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["members"].queryset = Person.objects.filter(
             created_by=self.request.user
         )

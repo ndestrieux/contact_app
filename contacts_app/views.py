@@ -37,11 +37,11 @@ class PwChangeView(SuccessMessageMixin, PasswordChangeView):
     success_message = "Password updated"
 
 
-class FormSetSuccessMessageMixin(object):
+class FormSetSuccessMessageMixin:
     success_message = ""
 
     def forms_valid(self, form, inlines):
-        response = super(FormSetSuccessMessageMixin, self).forms_valid(form, inlines)
+        response = super().forms_valid(form, inlines)
         success_message = self.get_success_message(form.cleaned_data)
         if success_message:
             messages.success(self.request, success_message)
@@ -138,7 +138,7 @@ class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         messages.success(self.request, self.success_message % obj.__dict__)
-        return super(DeleteContactView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class AddressDetailView(LoginRequiredMixin, DetailView):
@@ -243,7 +243,7 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_form_kwargs(self):
         """Passes the request object to the form class.
         This is necessary to only display members that belong to a given user"""
-        kwargs = super(UpdateGroupView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
 
@@ -257,13 +257,12 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return initial
 
     def form_valid(self, form):
-        # save group for selected users
         current_group = Group.objects.get(id=self.object.id)
         current_group.person_set.clear()
         for m_id in form.cleaned_data["members"].values_list("pk", flat=True):
             m = Person.objects.get(id=m_id)
             m.groups.add(self.object.id)
-        return super(UpdateGroupView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -279,4 +278,4 @@ class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         messages.success(self.request, self.success_message % obj.__dict__)
-        return super(DeleteGroupView, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
