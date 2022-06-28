@@ -20,8 +20,8 @@ from django.urls import path
 
 from contacts.settings import DEBUG
 from contacts_app.views import (
-    UserRegistration,
-    PwChange,
+    UserRegistrationView,
+    PwChangeView,
     ContactListView,
     CreateContactView,
     DeleteContactView,
@@ -39,14 +39,14 @@ from contacts_app.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("register/", UserRegistration.as_view(), name="register"),
+    path("register/", UserRegistrationView.as_view(), name="register"),
     path("login/", LoginView.as_view(template_name="users/login.html"), name="login"),
     path(
         "logout/",
         LogoutView.as_view(template_name="users/logged_out.html"),
         name="logout",
     ),
-    path("change_password/", PwChange.as_view(), name="change-password"),
+    path("change_password/", PwChangeView.as_view(), name="change-password"),
     path("", ContactListView.as_view(), name="contact-list"),
     path("show/<int:pk>", UpdateContactView.as_view(), name="contact-details"),
     path("new/", CreateContactView.as_view(), name="create-contact"),
