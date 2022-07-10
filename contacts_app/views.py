@@ -37,18 +37,12 @@ class PwChangeView(SuccessMessageMixin, PasswordChangeView):
     success_message = "Password updated"
 
 
-class FormSetSuccessMessageMixin:
-    success_message = ""
-
-    def forms_valid(self, form, inlines):
-        response = super().forms_valid(form, inlines)
-        success_message = self.get_success_message(form.cleaned_data)
-        if success_message:
-            messages.success(self.request, success_message)
-        return response
-
-    def get_success_message(self, cleaned_data):
-        return self.success_message % cleaned_data
+class UserAccessMixin:
+    def get_queryset(self):
+        get_object_or_404(
+            self.model, id=self.kwargs.get("pk"), created_by=self.request.user
+        )
+        return super().get_queryset()
 
 
 class ContactListView(LoginRequiredMixin, ListView):
@@ -56,9 +50,7 @@ class ContactListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
         current_user_person_query = Person.objects.filter(created_by=self.request.user)
-        # Search engine
         search = self.request.GET.get("search")
         if search is None:
             search = ""
@@ -75,7 +67,7 @@ class ContactListView(LoginRequiredMixin, ListView):
 
 class CreateContactView(
     LoginRequiredMixin,
-    FormSetSuccessMessageMixin,
+    SuccessMessageMixin,
     NamedFormsetsMixin,
     CreateWithInlinesView,
 ):
@@ -97,7 +89,8 @@ class CreateContactView(
 
 class UpdateContactView(
     LoginRequiredMixin,
-    FormSetSuccessMessageMixin,
+    UserAccessMixin,
+    SuccessMessageMixin,
     NamedFormsetsMixin,
     UpdateWithInlinesView,
 ):
@@ -112,28 +105,14 @@ class UpdateContactView(
     ]
     success_message = "Contact %(first_name)s %(last_name)s updated successfully"
 
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(
-            Person, id=self.kwargs.get("pk"), created_by=self.request.user
-        )
-        return super().get_queryset()
-
     def get_success_url(self):
         return reverse_lazy("contact-details", args=(self.object.id,))
 
 
-class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class DeleteContactView(LoginRequiredMixin, UserAccessMixin, SuccessMessageMixin, DeleteView):
     model = Person
     success_url = reverse_lazy("contact-list")
     success_message = "Contact %(first_name)s %(last_name)s deleted"
-
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(
-            Person, id=self.kwargs.get("pk"), created_by=self.request.user
-        )
-        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -141,56 +120,32 @@ class DeleteContactView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class AddressDetailView(LoginRequiredMixin, DetailView):
+class AddressDetailView(LoginRequiredMixin, UserAccessMixin, DetailView):
     model = Address
 
-    def get_queryset(self):
-        """Avoid current logged user to access data from other users"""
-        get_object_or_404(
-            Address, id=self.kwargs.get("pk"), created_by=self.request.user
-        )
-        return super().get_queryset()
 
-
-class DeleteAddressView(LoginRequiredMixin, DeleteView):
+class DeleteAddressView(LoginRequiredMixin, UserAccessMixin, DeleteView):
     model = Address
-
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(
-            Address, id=self.kwargs.get("pk"), created_by=self.request.user
-        )
-        return super().get_queryset()
 
     def get_success_url(self):
         return reverse_lazy("contact-details", args=(self.object.person_id,))
 
 
-class DeletePhoneView(LoginRequiredMixin, DeleteView):
+class DeletePhoneView(LoginRequiredMixin, UserAccessMixin, DeleteView):
     model = Phone
 
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(Phone, id=self.kwargs.get("pk"), created_by=self.request.user)
-        return super().get_queryset()
-
     def get_success_url(self):
         return reverse_lazy("contact-details", args=(self.object.person_id,))
 
 
-class DeleteEmailView(LoginRequiredMixin, DeleteView):
+class DeleteEmailView(LoginRequiredMixin, UserAccessMixin, DeleteView):
     model = Email
 
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(Email, id=self.kwargs.get("pk"), created_by=self.request.user)
-        return super().get_queryset()
-
     def get_success_url(self):
         return reverse_lazy("contact-details", args=(self.object.person_id,))
 
 
-class GroupListView(LoginRequiredMixin, ListView):
+class GroupListView(LoginRequiredMixin, UserAccessMixin, ListView):
     model = Group
     paginate_by = 10
 
@@ -209,13 +164,8 @@ class GroupListView(LoginRequiredMixin, ListView):
         return data
 
 
-class GroupDetailView(LoginRequiredMixin, DetailView):
+class GroupDetailView(LoginRequiredMixin, UserAccessMixin, DetailView):
     model = Group
-
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(Group, id=self.kwargs.get("pk"), created_by=self.request.user)
-        return super().get_queryset()
 
 
 class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -228,17 +178,12 @@ class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "New group added - %(name)s"
 
 
-class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UpdateGroupView(LoginRequiredMixin, UserAccessMixin, SuccessMessageMixin, UpdateView):
     model = Group
     form_class = UpdateGroupForm
     template_name_suffix = "_update_form"
     success_url = reverse_lazy("group-list")
     success_message = "Group %(name)s updated"
-
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(Group, id=self.kwargs.get("pk"), created_by=self.request.user)
-        return super().get_queryset()
 
     def get_form_kwargs(self):
         """Passes the request object to the form class.
@@ -248,7 +193,6 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return kwargs
 
     def get_initial(self):
-        # Passes the initial values from the manytomany relationship with table Person
         initial = super().get_initial()
         member_list = Person.objects.filter(
             groups=self.object.id, created_by=self.request.user
@@ -257,23 +201,16 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return initial
 
     def form_valid(self, form):
-        current_group = Group.objects.get(id=self.object.id)
-        current_group.person_set.clear()
         for m_id in form.cleaned_data["members"].values_list("pk", flat=True):
             m = Person.objects.get(id=m_id)
             m.groups.add(self.object.id)
         return super().form_valid(form)
 
 
-class DeleteGroupView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class DeleteGroupView(LoginRequiredMixin, UserAccessMixin, SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy("group-list")
     success_message = "Group %(name)s deleted"
-
-    def get_queryset(self):
-        # Avoid current logged user from accessing data from other users
-        get_object_or_404(Group, id=self.kwargs.get("pk"), created_by=self.request.user)
-        return super().get_queryset()
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
