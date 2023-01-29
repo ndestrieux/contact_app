@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import django_heroku
 import os
 import environ
 
@@ -57,7 +56,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -158,9 +156,6 @@ LOGIN_REDIRECT_URL = reverse_lazy("contact-list")
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 INTERNAL_IPS = ["127.0.0.1"]
-
-# Activate Django-Heroku.
-django_heroku.settings(locals())
 
 LOGGING = {
     "version": 1,
