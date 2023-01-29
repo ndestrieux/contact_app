@@ -8,8 +8,6 @@
 4. From the repository you just cloned, cd to [git_repository]/contacts and run command `python3 manage.py makemigrations` then `python3 manage.py migrate`.
 5. You are ready now to run the app, run the command `python3 manage.py runserver`, the link to reach the app will be showing below.
 
-Alternatively, the app is deployed on Heroku server :
-https://my-contact-box.herokuapp.com/
 
 ## App content
 
