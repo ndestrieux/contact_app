@@ -1,0 +1,48 @@
+services:
+    app:
+        build: .
+        command: >
+            sh -c "python manage.py makemigrations --no-input &&
+            python manage.py migrate --no-input &&
+            python -u manage.py runserver 0.0.0.0:8000"
+        ports:
+            - 8000:8000
+        volumes:
+            - .:/contact_app
+        env_file:
+            - .env
+        networks:
+            - network_internet
+            - network_no_internet
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: postgres:14
+        environment:
+            - POSTGRES_DB=${DATABASE_NAME}
+            - POSTGRES_USERS=${DATABASE_USER}
+            - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+        hostname: ${DATABASE_HOST}
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        networks:
+            - network_no_internet
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -U ${DATABASE_USER}" ]
+            interval: 1m30s
+            timeout: 30s
+            retries: 6
+        restart: always
+
+networks:
+    network_internet:
+        driver: bridge
+    network_no_internet:
+        driver: bridge
+        internal: true
+
+volumes:
+    pgdata:
+        driver: local
