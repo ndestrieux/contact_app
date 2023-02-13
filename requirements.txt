@@ -5,10 +5,12 @@ backports.zoneinfo==0.2.1
 black==22.6.0
 branca==0.4.2
 certifi==2021.10.8
+cffi==1.15.1
 cfgv==3.3.1
 chardet==4.0.0
 charset-normalizer==2.0.12
 click==8.0.4
+cryptography==39.0.0
 decorator==5.1.1
 dill==0.3.5.1
 distlib==0.3.6
@@ -25,6 +27,7 @@ django-octicons==1.0.2
 django-phonenumber-field==6.1.0
 django-select2==7.10.0
 django-widget-tweaks==1.4.12
+djangorestframework==3.14.0
 dodgy==0.2.1
 Faker==13.0.0
 filelock==3.9.0
@@ -51,8 +54,10 @@ phonenumbers==8.12.43
 platformdirs==2.5.2
 pre-commit==3.0.1
 prospector==1.7.7
+psycopg2==2.9.5
 psycopg2-binary==2.9.3
 pycodestyle==2.8.0
+pycparser==2.21
 pydocstyle==6.1.1
 pyflakes==2.4.0
 pylint==2.14.3
