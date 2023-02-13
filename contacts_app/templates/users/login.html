@@ -6,6 +6,14 @@
 
     <div class="container">
         <h2>Login</h2>
+        <br>
+
+        <a href="{% url 'google-connect' %}">
+            <div class="login-with-google-btn">
+                Sign in with google
+            </div>
+        </a>
+        <br>
         <form method="post">
             {{ form|crispy }}
             <input type="submit" class="btn btn-outline-primary" value="Log in">

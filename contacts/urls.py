@@ -36,6 +36,7 @@ from contacts_app.views import (
     UpdateContactView,
     AddressDetailView,
 )
+from oauth_api.urls import api_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -60,6 +61,7 @@ urlpatterns = [
     path("groups/new", CreateGroupView.as_view(), name="create-group"),
     path("groups/modify/<int:pk>", UpdateGroupView.as_view(), name="update-group"),
     path("groups/delete/<int:pk>", DeleteGroupView.as_view(), name="delete-group"),
+    path("api/", include(api_urls)),
     path("select2/", include("django_select2.urls")),
 ]
 
