@@ -1,12 +1,24 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django import forms
 from extra_views import InlineFormSetFactory
 from django_select2 import forms as s2forms
 
 
-from contacts_app.models import Person, Phone, Email, Address, Group
+from contacts_app.models import Person, Phone, Email, Address, Group, User
+
+
+class CurrentUserFormMixin:
+    def __init__(self, *args, **kwargs):
+        self.current_user = kwargs.pop("current_user")
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.created_by = self.current_user
+        if commit:
+            instance.save()
+        return instance
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -21,7 +33,7 @@ class GroupWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = ["name__icontains"]
 
 
-class PersonForm(forms.ModelForm):
+class PersonForm(CurrentUserFormMixin, forms.ModelForm):
     first_name = forms.CharField(validators=[RegexValidator("^((\w)+([-'])*(\w)+)$")])
     last_name = forms.CharField(validators=[RegexValidator("^((\w)+([-'])*(\w)+)$")])
 
@@ -38,7 +50,6 @@ class AddressForm(forms.ModelForm):
         model = Address
         exclude = [
             "person",
-            "created_by",
         ]
         widgets = {"type": forms.HiddenInput()}
 
@@ -54,7 +65,6 @@ class PhoneForm(forms.ModelForm):
         model = Phone
         exclude = [
             "person",
-            "created_by",
         ]
 
 
@@ -69,7 +79,6 @@ class EmailForm(forms.ModelForm):
         model = Email
         exclude = [
             "person",
-            "created_by",
         ]
 
 
@@ -107,14 +116,11 @@ class MemberWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = ["first_name__icontains", "last_name__icontains"]
 
 
-class UpdateGroupForm(forms.ModelForm):
+class UpdateGroupForm(CurrentUserFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        """Grants access to the request object so that only members of the current user
-        are given as options"""
-        self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
         self.fields["members"].queryset = Person.objects.filter(
-            created_by=self.request.user
+            created_by=self.current_user
         )
         self.fields["members"].required = False
 

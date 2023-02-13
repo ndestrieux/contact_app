@@ -24,6 +24,13 @@ from contacts_app.forms import (
 from contacts_app.models import Person, Address, Phone, Email, Group
 
 
+class CurrentUserViewMixin:
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["current_user"] = self.request.user
+        return kwargs
+
+
 class UserRegistrationView(SuccessMessageMixin, CreateView):
     form_class = UserRegistrationForm
     template_name = "users/registration.html"
@@ -74,6 +81,7 @@ class ContactListView(LoginRequiredMixin, ListView):
 
 
 class CreateContactView(
+    CurrentUserViewMixin,
     LoginRequiredMixin,
     FormSetSuccessMessageMixin,
     NamedFormsetsMixin,
@@ -96,6 +104,7 @@ class CreateContactView(
 
 
 class UpdateContactView(
+    CurrentUserViewMixin,
     LoginRequiredMixin,
     FormSetSuccessMessageMixin,
     NamedFormsetsMixin,
@@ -218,17 +227,14 @@ class GroupDetailView(LoginRequiredMixin, DetailView):
         return super().get_queryset()
 
 
-class CreateGroupView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CreateGroupView(CurrentUserViewMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Group
-    fields = [
-        "name",
-        "description",
-    ]
+    form_class = UpdateGroupForm
     success_url = reverse_lazy("group-list")
     success_message = "New group added - %(name)s"
 
 
-class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class UpdateGroupView(CurrentUserViewMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Group
     form_class = UpdateGroupForm
     template_name_suffix = "_update_form"
@@ -239,13 +245,6 @@ class UpdateGroupView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         # Avoid current logged user from accessing data from other users
         get_object_or_404(Group, id=self.kwargs.get("pk"), created_by=self.request.user)
         return super().get_queryset()
-
-    def get_form_kwargs(self):
-        """Passes the request object to the form class.
-        This is necessary to only display members that belong to a given user"""
-        kwargs = super().get_form_kwargs()
-        kwargs["request"] = self.request
-        return kwargs
 
     def get_initial(self):
         # Passes the initial values from the manytomany relationship with table Person

@@ -1,6 +1,7 @@
 from django.db import models
 from django_countries.fields import CountryField
-from django_currentuser.db.models import CurrentUserField
+from django.contrib.auth.models import AbstractUser
+from django.core.management.utils import get_random_secret_key
 from folium import Map, Marker, Icon
 from geopy import Nominatim
 from phonenumber_field.modelfields import PhoneNumberField
@@ -17,10 +18,27 @@ PHONE_TYPE = (
 EMAIL_TYPE = ((1, "work"), (2, "home"))
 
 
+class User(AbstractUser):
+    email = models.EmailField(unique=True, db_index=True)
+    secret_key = models.CharField(max_length=255, default=get_random_secret_key)
+
+    REQUIRED_FIELDS = []
+
+    class Meta:
+        swappable = 'AUTH_USER_MODEL'
+
+    @property
+    def name(self):
+        if not self.last_name:
+            return self.first_name.capitalize()
+
+        return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
+
+
 class Group(models.Model):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
-    created_by = CurrentUserField(related_name="group_created_by")
+    created_by = models.ForeignKey(User, related_name="group_created_by", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
@@ -36,7 +54,7 @@ class Person(models.Model):
     last_name = models.CharField(max_length=32)
     description = models.TextField(null=True, blank=True)
     groups = models.ManyToManyField(Group, blank=True)
-    created_by = CurrentUserField(related_name="person_created_by")
+    created_by = models.ForeignKey(User, related_name="person_created_by", on_delete=models.CASCADE)
 
     @property
     def name(self):
@@ -70,7 +88,7 @@ class Address(models.Model):
     flat_number = models.CharField(max_length=8, null=True, blank=True)
     type = models.IntegerField(choices=ADDRESS_TYPE)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
-    created_by = CurrentUserField(related_name="address_created_by")
+    # created_by = models.ForeignKey(User, related_name="address_created_by", on_delete=models.CASCADE)
 
     @property
     def full_address(self):
@@ -109,7 +127,7 @@ class Phone(models.Model):
     number = PhoneNumberField()
     type = models.IntegerField(choices=PHONE_TYPE, default=None, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
-    created_by = CurrentUserField(related_name="phone_created_by")
+    # created_by = models.ForeignKey(User, related_name="phone_created_by", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.number}"
@@ -119,7 +137,7 @@ class Email(models.Model):
     address = models.EmailField(max_length=128)
     type = models.IntegerField(choices=EMAIL_TYPE, default=None, blank=True, null=True)
     person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
-    created_by = CurrentUserField(related_name="email_created_by")
+    # created_by = models.ForeignKey(User, related_name="email_created_by", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.address}"
