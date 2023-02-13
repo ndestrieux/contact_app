@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django_countries",
     "phonenumber_field",
     "django_select2",
+    "rest_framework",
     "contacts_app",
 ]
 
@@ -144,6 +145,8 @@ STATIC_DIR = (
     os.path.join(BASE_DIR, "contacts_app/static"),
 )
 
+AUTH_USER_MODEL = 'contacts_app.User'
+
 # https://warehouse.python.org/project/whitenoise/
 
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -179,3 +182,8 @@ LOGGING = {
         },
     },
 }
+
+
+# Google OAuth2 settings
+GOOGLE_OAUTH2_CLIENT_ID = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_ID')
+GOOGLE_OAUTH2_CLIENT_SECRET = env.str('DJANGO_GOOGLE_OAUTH2_CLIENT_SECRET')
